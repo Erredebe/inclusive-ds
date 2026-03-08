@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@inclusiv-ds/button": "workspace:*",
+    "@inclusiv-ds/container": "workspace:*",
     "@inclusiv-ds/dialog": "workspace:*",
     "@inclusiv-ds/input": "workspace:*",
     "@inclusiv-ds/tokens": "workspace:*"

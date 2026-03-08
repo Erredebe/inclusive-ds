@@ -120,6 +120,20 @@
         cursor: pointer;
       }
 
+      .workspace__actions {
+        display: inline-flex;
+        gap: 8px;
+      }
+
+      .preview-btn {
+        border: 1px solid #0f766e;
+        border-radius: 8px;
+        background: #0f766e;
+        color: #fff;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
       .canvas {
         border: 2px dashed #b8ddd6;
         border-radius: 14px;
@@ -130,6 +144,15 @@
         gap: 12px;
         min-height: 320px;
         position: relative;
+      }
+
+      .canvas--preview {
+        border-style: solid;
+      }
+
+      .canvas-preview-item {
+        grid-column: span var(--col-span, 12);
+        grid-row: span var(--row-span, 1);
       }
 
       .canvas--show-grid {
@@ -158,6 +181,48 @@
         grid-row: span var(--row-span, 1);
         cursor: grab;
         transition: box-shadow 0.2s ease;
+      }
+
+      .canvas-item__preview {
+        margin-bottom: 10px;
+      }
+
+      .canvas-item__slots {
+        display: grid;
+        gap: 8px;
+      }
+
+      .slot-section {
+        border-top: 1px dashed #dbece8;
+        padding-top: 8px;
+      }
+
+      .slot-section__title {
+        margin: 0 0 6px;
+        font-size: 0.75rem;
+        color: #4b5563;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .slot-dropzone {
+        border: 1px dashed #cde7e3;
+        border-radius: 8px;
+        padding: 8px;
+        display: grid;
+        gap: 8px;
+        background: #f9fdfc;
+      }
+
+      .slot-dropzone--active {
+        border-color: #0f766e;
+        background: #ecfaf7;
+      }
+
+      .slot-dropzone__empty {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.8rem;
       }
 
       .canvas-item:active {
@@ -278,6 +343,26 @@
         cursor: pointer;
       }
 
+      .editor--preview .panel,
+      .editor--preview .toolbar-controls,
+      .editor--preview #clear-canvas,
+      .editor--preview .canvas-item__meta,
+      .editor--preview .canvas-item__slots {
+        display: none;
+      }
+
+      .editor--preview .editor-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .editor--preview .workspace {
+        padding: 20px;
+      }
+
+      .editor--preview .workspace__toolbar {
+        justify-content: flex-end;
+      }
+
       @media (max-width: 900px) {
         .editor-layout {
           grid-template-columns: 1fr;
@@ -305,6 +390,9 @@
         </div>
 
         <div class="palette" id="palette">
+          <button class="palette-item" draggable="true" data-component="iv-container">
+            Container
+          </button>
           <button class="palette-item" draggable="true" data-component="iv-heading">Heading</button>
           <button class="palette-item" draggable="true" data-component="iv-text">Text</button>
           <button class="palette-item" draggable="true" data-component="iv-button">Button</button>
@@ -338,7 +426,10 @@
               <input id="grid-gap" type="range" min="6" max="24" value="12" />
             </label>
           </div>
-          <button id="clear-canvas" class="clear-btn" type="button">Limpiar</button>
+          <div class="workspace__actions">
+            <button id="toggle-preview-mode" class="preview-btn" type="button">Preview</button>
+            <button id="clear-canvas" class="clear-btn" type="button">Limpiar</button>
+          </div>
         </div>
         <section class="canvas canvas--show-grid" id="drop-canvas">
           <p class="canvas__empty">Suelta aqui los componentes para empezar.</p>

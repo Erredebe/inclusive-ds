@@ -12,6 +12,7 @@ import { defineCustomElement as defineIvRadioGroup } from '@inclusiv-ds/radio/co
 import { defineCustomElement as defineIvToggle } from '@inclusiv-ds/toggle/components/iv-toggle';
 import { defineCustomElement as defineIvFormField } from '@inclusiv-ds/form-field/components/iv-form-field';
 import { defineCustomElement as defineIvDialog } from '@inclusiv-ds/dialog/components/iv-dialog';
+import { defineCustomElement as defineIvContainer } from '@inclusiv-ds/container/components/iv-container';
 
 if (!customElements.get('iv-button')) {
   defineIvButton();
@@ -63,6 +64,10 @@ if (!customElements.get('iv-form-field')) {
 
 if (!customElements.get('iv-dialog')) {
   defineIvDialog();
+}
+
+if (!customElements.get('iv-container')) {
+  defineIvContainer();
 }
 
 const style = document.createElement('style');

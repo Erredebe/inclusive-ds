@@ -10,6 +10,7 @@
     "@inclusiv-ds/badge": "workspace:*",
     "@inclusiv-ds/button": "workspace:*",
     "@inclusiv-ds/checkbox": "workspace:*",
+    "@inclusiv-ds/container": "workspace:*",
     "@inclusiv-ds/dialog": "workspace:*",
     "@inclusiv-ds/form-field": "workspace:*",
     "@inclusiv-ds/input": "workspace:*",

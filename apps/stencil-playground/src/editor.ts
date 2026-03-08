@@ -3,6 +3,7 @@ import { defineCustomElement as defineIvBadge } from '@inclusiv-ds/badge/compone
 import { defineCustomElement as defineIvButton } from '@inclusiv-ds/button/components/iv-button';
 import { defineCustomElement as defineIvCheckbox } from '@inclusiv-ds/checkbox/components/iv-checkbox';
 import { defineCustomElement as defineIvDialog } from '@inclusiv-ds/dialog/components/iv-dialog';
+import { defineCustomElement as defineIvContainer } from '@inclusiv-ds/container/components/iv-container';
 import { defineCustomElement as defineIvFormField } from '@inclusiv-ds/form-field/components/iv-form-field';
 import { defineCustomElement as defineIvInput } from '@inclusiv-ds/input/components/iv-input';
 import { defineCustomElement as defineIvRadio } from '@inclusiv-ds/radio/components/iv-radio';
@@ -14,6 +15,7 @@ import { defineCustomElement as defineIvLabel } from '@inclusiv-ds/typography/co
 import { defineCustomElement as defineIvText } from '@inclusiv-ds/typography/components/iv-text';
 
 type DsComponent =
+  | 'iv-container'
   | 'iv-heading'
   | 'iv-text'
   | 'iv-button'
@@ -54,10 +56,11 @@ interface EditorItem {
     colSpan: number;
     rowSpan: number;
   };
+  slots: Record<string, EditorItem[]>;
 }
 
 interface EditorState {
-  version: 2;
+  version: 3;
   selectedItemId: string | null;
   grid: {
     columns: number;
@@ -68,16 +71,25 @@ interface EditorState {
   items: EditorItem[];
 }
 
+interface InspectorFocusSnapshot {
+  fieldId: string;
+  selectionStart: number | null;
+  selectionEnd: number | null;
+}
+
 interface ComponentSchema {
   title: string;
   defaultProps: Record<string, PropValue>;
   defaultContent: Record<string, string>;
+  availableSlots: string[];
   propFields: PropField[];
   contentFields: ContentField[];
   createElement: (item: EditorItem) => HTMLElement;
 }
 
+const ROOT_SLOT = 'default';
 const STORAGE_KEY_V2 = 'ids-editor-layout-v2';
+const STORAGE_KEY_V3 = 'ids-editor-layout-v3';
 const STORAGE_KEY_V1 = 'ids-editor-layout-v1';
 
 if (!customElements.get('iv-button')) defineIvButton();
@@ -93,6 +105,7 @@ if (!customElements.get('iv-radio-group')) defineIvRadioGroup();
 if (!customElements.get('iv-toggle')) defineIvToggle();
 if (!customElements.get('iv-form-field')) defineIvFormField();
 if (!customElements.get('iv-dialog')) defineIvDialog();
+if (!customElements.get('iv-container')) defineIvContainer();
 
 const palette = document.getElementById('palette');
 const canvas = document.getElementById('drop-canvas');
@@ -101,6 +114,13 @@ const inspectorFields = document.getElementById('inspector-fields');
 const inspectorSubtitle = document.getElementById('inspector-subtitle');
 const toggleGrid = document.getElementById('toggle-grid') as HTMLInputElement | null;
 const gapSlider = document.getElementById('grid-gap') as HTMLInputElement | null;
+const previewToggleButton = document.getElementById(
+  'toggle-preview-mode',
+) as HTMLButtonElement | null;
+const editorLayout = document.querySelector('.editor-layout') as HTMLElement | null;
+
+const PREVIEW_STORAGE_KEY = 'ids-editor-preview-mode';
+let isPreviewMode = window.localStorage.getItem(PREVIEW_STORAGE_KEY) === '1';
 
 if (!palette || !canvas || !inspectorFields || !inspectorSubtitle) {
   throw new Error('Editor DOM no encontrado');
@@ -112,10 +132,48 @@ const inspectorFieldsEl = inspectorFields;
 const inspectorSubtitleEl = inspectorSubtitle;
 
 const schemas: Record<DsComponent, ComponentSchema> = {
+  'iv-container': {
+    title: 'Container',
+    defaultProps: {
+      direction: 'column',
+      align: 'stretch',
+      justify: 'start',
+      gap: '12',
+      padding: '16',
+      wrap: false,
+    },
+    defaultContent: {},
+    availableSlots: [ROOT_SLOT],
+    propFields: [
+      { key: 'direction', label: 'Direction', type: 'select', options: ['row', 'column'] },
+      {
+        key: 'align',
+        label: 'Align',
+        type: 'select',
+        options: ['start', 'center', 'end', 'stretch'],
+      },
+      {
+        key: 'justify',
+        label: 'Justify',
+        type: 'select',
+        options: ['start', 'center', 'end', 'between', 'around'],
+      },
+      { key: 'gap', label: 'Gap', type: 'number', min: 0, max: 64, step: 1 },
+      { key: 'padding', label: 'Padding', type: 'number', min: 0, max: 64, step: 1 },
+      { key: 'wrap', label: 'Wrap', type: 'boolean' },
+    ],
+    contentFields: [],
+    createElement: (item) => {
+      const el = document.createElement('iv-container');
+      applyProps(el, item.props);
+      return el;
+    },
+  },
   'iv-heading': {
     title: 'Heading',
     defaultProps: { version: 'v1', level: 'h3' },
     defaultContent: { text: 'Titulo editable' },
+    availableSlots: [ROOT_SLOT],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       {
@@ -137,6 +195,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     title: 'Text',
     defaultProps: { version: 'v1', variant: 'body', color: 'default' },
     defaultContent: { text: 'Texto de ejemplo en el editor.' },
+    availableSlots: [ROOT_SLOT],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       {
@@ -165,6 +224,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       disabled: false,
     },
     defaultContent: { text: 'Accion' },
+    availableSlots: [ROOT_SLOT],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'variant', label: 'Variant', type: 'select', options: ['primary', 'ghost'] },
@@ -195,6 +255,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       state: 'default',
     },
     defaultContent: {},
+    availableSlots: [],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'label', label: 'Label', type: 'text' },
@@ -213,6 +274,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     title: 'Badge',
     defaultProps: { version: 'v1', variant: 'info' },
     defaultContent: { text: 'Nuevo' },
+    availableSlots: [ROOT_SLOT],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       {
@@ -234,6 +296,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     title: 'Spinner',
     defaultProps: { version: 'v1', size: 'md', label: 'Loading' },
     defaultContent: {},
+    availableSlots: [],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'size', label: 'Size', type: 'select', options: ['sm', 'md', 'lg'] },
@@ -256,6 +319,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       label: 'Acepto terminos',
     },
     defaultContent: {},
+    availableSlots: [],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'label', label: 'Label', type: 'text' },
@@ -274,6 +338,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     title: 'Radio Group',
     defaultProps: { name: 'editor-radio-group', label: 'Selecciona una opcion' },
     defaultContent: { optionA: 'Opcion A', optionB: 'Opcion B' },
+    availableSlots: [ROOT_SLOT],
     propFields: [
       { key: 'name', label: 'Name', type: 'text' },
       { key: 'label', label: 'Label', type: 'text' },
@@ -286,18 +351,20 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       const group = document.createElement('iv-radio-group');
       applyProps(group, item.props);
 
-      const name = String(item.props.name || 'editor-radio-group');
-      const radioA = document.createElement('iv-radio');
-      radioA.setAttribute('name', name);
-      radioA.setAttribute('value', 'a');
-      radioA.setAttribute('label', item.content.optionA || 'Opcion A');
+      if ((item.slots[ROOT_SLOT] || []).length === 0) {
+        const name = String(item.props.name || 'editor-radio-group');
+        const radioA = document.createElement('iv-radio');
+        radioA.setAttribute('name', name);
+        radioA.setAttribute('value', 'a');
+        radioA.setAttribute('label', item.content.optionA || 'Opcion A');
 
-      const radioB = document.createElement('iv-radio');
-      radioB.setAttribute('name', name);
-      radioB.setAttribute('value', 'b');
-      radioB.setAttribute('label', item.content.optionB || 'Opcion B');
+        const radioB = document.createElement('iv-radio');
+        radioB.setAttribute('name', name);
+        radioB.setAttribute('value', 'b');
+        radioB.setAttribute('label', item.content.optionB || 'Opcion B');
 
-      group.append(radioA, radioB);
+        group.append(radioA, radioB);
+      }
       return group;
     },
   },
@@ -305,6 +372,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     title: 'Toggle',
     defaultProps: { version: 'v1', checked: false, disabled: false, label: 'Activar opcion' },
     defaultContent: {},
+    availableSlots: [],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'label', label: 'Label', type: 'text' },
@@ -329,6 +397,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       required: false,
     },
     defaultContent: { inputPlaceholder: 'tu@email.com' },
+    availableSlots: [ROOT_SLOT],
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'label', label: 'Label', type: 'text' },
@@ -342,10 +411,12 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       const field = document.createElement('iv-form-field');
       applyProps(field, item.props);
 
-      const input = document.createElement('iv-input');
-      input.setAttribute('version', 'v2');
-      input.setAttribute('placeholder', item.content.inputPlaceholder || 'tu@email.com');
-      field.appendChild(input);
+      if ((item.slots[ROOT_SLOT] || []).length === 0) {
+        const input = document.createElement('iv-input');
+        input.setAttribute('version', 'v2');
+        input.setAttribute('placeholder', item.content.inputPlaceholder || 'tu@email.com');
+        field.appendChild(input);
+      }
 
       return field;
     },
@@ -353,7 +424,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
   'iv-dialog': {
     title: 'Dialog',
     defaultProps: {
-      open: true,
+      open: false,
       mode: 'modal',
       placement: 'right',
       anchor: '',
@@ -368,6 +439,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       title: 'Dialog del editor',
       body: 'Contenido de ejemplo dentro de iv-dialog.',
     },
+    availableSlots: ['title', ROOT_SLOT, 'actions'],
     propFields: [
       { key: 'open', label: 'Open', type: 'boolean' },
       { key: 'mode', label: 'Mode', type: 'select', options: ['modal', 'drawer', 'list', 'alert'] },
@@ -393,14 +465,18 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       const dialog = document.createElement('iv-dialog');
       applyProps(dialog, item.props);
 
-      const title = document.createElement('h3');
-      title.setAttribute('slot', 'title');
-      title.textContent = item.content.title;
+      if ((item.slots.title || []).length === 0) {
+        const title = document.createElement('h3');
+        title.setAttribute('slot', 'title');
+        title.textContent = item.content.title;
+        dialog.appendChild(title);
+      }
 
-      const content = document.createElement('p');
-      content.textContent = item.content.body;
-
-      dialog.append(title, content);
+      if ((item.slots[ROOT_SLOT] || []).length === 0) {
+        const content = document.createElement('p');
+        content.textContent = item.content.body;
+        dialog.appendChild(content);
+      }
       return dialog;
     },
   },
@@ -409,10 +485,18 @@ const schemas: Record<DsComponent, ComponentSchema> = {
 let state: EditorState = loadState();
 let draggingItemId: string | null = null;
 
+canvasEl.dataset.dropSlot = ROOT_SLOT;
+canvasEl.dataset.dropParentId = '';
+
 renderAll();
 
 paletteEl.querySelectorAll<HTMLElement>('.palette-item').forEach((item) => {
   item.addEventListener('dragstart', (event: DragEvent) => {
+    if (isPreviewMode) {
+      event.preventDefault();
+      return;
+    }
+
     const component = item.dataset.component as DsComponent | undefined;
     if (!component || !event.dataTransfer) return;
     event.dataTransfer.setData('text/plain', component);
@@ -421,6 +505,8 @@ paletteEl.querySelectorAll<HTMLElement>('.palette-item').forEach((item) => {
 });
 
 canvasEl.addEventListener('click', (event) => {
+  if (isPreviewMode) return;
+
   const actionButton = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-action]');
   if (actionButton) {
     event.stopPropagation();
@@ -438,6 +524,11 @@ canvasEl.addEventListener('click', (event) => {
 });
 
 canvasEl.addEventListener('dragstart', (event) => {
+  if (isPreviewMode) {
+    event.preventDefault();
+    return;
+  }
+
   const card = (event.target as HTMLElement).closest<HTMLElement>('.canvas-item');
   if (!card || !event.dataTransfer) return;
   draggingItemId = card.dataset.itemId || null;
@@ -449,69 +540,68 @@ canvasEl.addEventListener('dragstart', (event) => {
 canvasEl.addEventListener('dragend', () => {
   draggingItemId = null;
   canvasEl.classList.remove('canvas--active');
-  clearDropIndicators();
+  canvasEl.querySelectorAll<HTMLElement>('.slot-dropzone--active').forEach((el) => {
+    el.classList.remove('slot-dropzone--active');
+  });
 });
 
 canvasEl.addEventListener('dragover', (event: DragEvent) => {
+  if (isPreviewMode) return;
+
+  const slotZone = (event.target as HTMLElement).closest<HTMLElement>('[data-drop-slot]');
+  if (!slotZone) return;
   event.preventDefault();
   canvasEl.classList.add('canvas--active');
-
-  clearDropIndicators();
-  const card = (event.target as HTMLElement).closest<HTMLElement>('.canvas-item');
-  if (!card) return;
-
-  const { top, height } = card.getBoundingClientRect();
-  const position = event.clientY < top + height / 2 ? 'before' : 'after';
-  card.dataset.dropPosition = position;
-  card.classList.add(
-    position === 'before' ? 'canvas-item--drop-before' : 'canvas-item--drop-after',
-  );
+  slotZone.classList.add('slot-dropzone--active');
 });
 
 canvasEl.addEventListener('dragleave', (event) => {
+  if (isPreviewMode) return;
+
+  const slotZone = (event.target as HTMLElement).closest<HTMLElement>('[data-drop-slot]');
+  if (!slotZone) return;
   const target = event.relatedTarget as Node | null;
-  if (target && canvasEl.contains(target)) return;
-  canvasEl.classList.remove('canvas--active');
-  clearDropIndicators();
+  if (target && slotZone.contains(target)) return;
+  slotZone.classList.remove('slot-dropzone--active');
 });
 
 canvasEl.addEventListener('drop', (event: DragEvent) => {
+  if (isPreviewMode) return;
+
+  const slotZone = (event.target as HTMLElement).closest<HTMLElement>('[data-drop-slot]');
+  if (!slotZone) return;
   event.preventDefault();
   canvasEl.classList.remove('canvas--active');
+  slotZone.classList.remove('slot-dropzone--active');
 
-  const targetCard = (event.target as HTMLElement).closest<HTMLElement>('.canvas-item');
-  const targetId = targetCard?.dataset.itemId || null;
-  const position = (targetCard?.dataset.dropPosition as 'before' | 'after' | undefined) || 'after';
+  const slotName = slotZone.dataset.dropSlot || ROOT_SLOT;
+  const targetParentId = slotZone.dataset.dropParentId || null;
 
   const droppedComponent = event.dataTransfer?.getData('text/plain') as DsComponent | '';
   const draggedId = event.dataTransfer?.getData('application/x-editor-item') || draggingItemId;
 
   if (droppedComponent && isDsComponent(droppedComponent)) {
     const newItem = createItem(droppedComponent);
-    const nextItems = insertItemAtTarget(state.items, newItem, targetId, position);
+    const nextItems = insertItemAtSlot(state.items, targetParentId, slotName, newItem);
     setState({ ...state, items: nextItems, selectedItemId: newItem.id });
-    clearDropIndicators();
     return;
   }
 
   if (!draggedId) {
-    clearDropIndicators();
     return;
   }
 
-  const nextItems = reorderItems(state.items, draggedId, targetId, position);
-  if (nextItems !== state.items) {
-    setState({ ...state, items: nextItems, selectedItemId: draggedId });
-  }
-
-  clearDropIndicators();
+  const nextItems = moveItemToSlot(state.items, draggedId, targetParentId, slotName);
+  setState({ ...state, items: nextItems, selectedItemId: draggedId });
 });
 
 clearButton?.addEventListener('click', () => {
+  if (isPreviewMode) return;
   setState({ ...state, items: [], selectedItemId: null });
 });
 
 toggleGrid?.addEventListener('change', () => {
+  if (isPreviewMode) return;
   setState({
     ...state,
     grid: { ...state.grid, showOverlay: toggleGrid.checked },
@@ -519,6 +609,7 @@ toggleGrid?.addEventListener('change', () => {
 });
 
 gapSlider?.addEventListener('input', () => {
+  if (isPreviewMode) return;
   const gap = Number(gapSlider.value || 12);
   setState({
     ...state,
@@ -526,32 +617,51 @@ gapSlider?.addEventListener('input', () => {
   });
 });
 
+previewToggleButton?.addEventListener('click', () => {
+  setPreviewMode(!isPreviewMode);
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key.toLowerCase() !== 'p') return;
+
+  const activeElement = document.activeElement;
+  if (
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement ||
+    activeElement instanceof HTMLSelectElement ||
+    activeElement instanceof HTMLButtonElement
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+  setPreviewMode(!isPreviewMode);
+});
+
 function handleItemAction(action: string, itemId: string): void {
   if (action === 'delete') {
-    const nextItems = state.items.filter((item) => item.id !== itemId);
-    const selectedItemId = state.selectedItemId === itemId ? null : state.selectedItemId;
+    const nextItems = removeItemById(state.items, itemId).items;
+    const selectedItemId =
+      state.selectedItemId && findItemById(nextItems, state.selectedItemId)
+        ? state.selectedItemId
+        : null;
     setState({ ...state, items: nextItems, selectedItemId });
     return;
   }
 
   if (action === 'duplicate') {
-    const index = state.items.findIndex((item) => item.id === itemId);
-    if (index < 0) return;
-    const source = state.items[index];
-    const clone: EditorItem = {
-      ...source,
-      id: generateId(),
-      props: { ...source.props },
-      content: { ...source.content },
-      layout: { ...source.layout },
-    };
-    const nextItems = [...state.items];
-    nextItems.splice(index + 1, 0, clone);
+    const source = findItemById(state.items, itemId);
+    if (!source) return;
+    const location = findItemLocation(state.items, itemId);
+    if (!location) return;
+    const clone = cloneItem(source);
+    const nextItems = insertItemAtSlot(state.items, location.parentId, location.slotName, clone);
     setState({ ...state, items: nextItems, selectedItemId: clone.id });
   }
 }
 
 function renderAll(): void {
+  applyPreviewMode();
   renderCanvas();
   renderInspector();
   persistState();
@@ -559,54 +669,41 @@ function renderAll(): void {
 
 function renderCanvas(): void {
   canvasEl.innerHTML = '';
+  canvasEl.classList.toggle('canvas--preview', isPreviewMode);
 
   canvasEl.style.setProperty(
     'grid-template-columns',
     `repeat(${state.grid.columns}, minmax(0, 1fr))`,
   );
   canvasEl.style.setProperty('gap', `${state.grid.gap}px`);
-  canvasEl.classList.toggle('canvas--show-grid', state.grid.showOverlay);
+  canvasEl.classList.toggle('canvas--show-grid', state.grid.showOverlay && !isPreviewMode);
 
   if (state.items.length === 0) {
     const empty = document.createElement('p');
     empty.className = 'canvas__empty';
     empty.textContent = 'Suelta aqui los componentes para empezar.';
     canvasEl.appendChild(empty);
+  }
+
+  if (isPreviewMode) {
+    state.items.forEach((item) => {
+      const previewItem = document.createElement('div');
+      previewItem.className = 'canvas-preview-item';
+      previewItem.style.setProperty('--col-span', String(clamp(item.layout.colSpan, 1, 12)));
+      previewItem.style.setProperty('--row-span', String(clamp(item.layout.rowSpan, 1, 4)));
+      previewItem.appendChild(createPreviewElement(item));
+      canvasEl.appendChild(previewItem);
+    });
     return;
   }
 
   state.items.forEach((item) => {
-    const schema = schemas[item.type];
-    const card = document.createElement('article');
-    card.className = 'canvas-item';
-    if (item.id === state.selectedItemId) card.classList.add('canvas-item--selected');
-    card.setAttribute('draggable', 'true');
-    card.dataset.itemId = item.id;
-    card.style.setProperty('--col-span', String(clamp(item.layout.colSpan, 1, 12)));
-    card.style.setProperty('--row-span', String(clamp(item.layout.rowSpan, 1, 4)));
-
-    const meta = document.createElement('div');
-    meta.className = 'canvas-item__meta';
-
-    const name = document.createElement('span');
-    name.className = 'canvas-item__name';
-    name.textContent = `${schema.title} · ${item.layout.colSpan}/12`;
-
-    const actions = document.createElement('div');
-    actions.className = 'canvas-item__actions';
-    actions.innerHTML = `
-      <button type="button" data-action="duplicate">Duplicar</button>
-      <button type="button" data-action="delete">Eliminar</button>
-    `;
-
-    meta.append(name, actions);
-    card.append(meta, schema.createElement(item));
-    canvasEl.appendChild(card);
+    canvasEl.appendChild(renderCanvasItem(item));
   });
 }
 
 function renderInspector(): void {
-  const selected = state.items.find((item) => item.id === state.selectedItemId) || null;
+  const selected = state.selectedItemId ? findItemById(state.items, state.selectedItemId) : null;
 
   if (!selected) {
     inspectorSubtitleEl.textContent = 'Selecciona un bloque para editar sus propiedades.';
@@ -623,18 +720,36 @@ function renderInspector(): void {
   layoutSection.className = 'inspector__section';
   layoutSection.innerHTML = '<h3>Layout</h3>';
   layoutSection.append(
-    createNumberField('colSpan', 'Columnas (1-12)', selected.layout.colSpan, 1, 12, 1, (value) => {
-      updateSelectedItem((item) => {
-        item.layout.colSpan = clamp(value, 1, 12);
-      });
-    }),
+    createNumberField(
+      'colSpan',
+      'Columnas (1-12)',
+      selected.layout.colSpan,
+      1,
+      12,
+      1,
+      (value) => {
+        updateSelectedItem((item) => {
+          item.layout.colSpan = clamp(value, 1, 12);
+        });
+      },
+      'layout-colSpan',
+    ),
   );
   layoutSection.append(
-    createNumberField('rowSpan', 'Filas (1-4)', selected.layout.rowSpan, 1, 4, 1, (value) => {
-      updateSelectedItem((item) => {
-        item.layout.rowSpan = clamp(value, 1, 4);
-      });
-    }),
+    createNumberField(
+      'rowSpan',
+      'Filas (1-4)',
+      selected.layout.rowSpan,
+      1,
+      4,
+      1,
+      (value) => {
+        updateSelectedItem((item) => {
+          item.layout.rowSpan = clamp(value, 1, 4);
+        });
+      },
+      'layout-rowSpan',
+    ),
   );
 
   const propSection = document.createElement('section');
@@ -665,6 +780,7 @@ function renderInspector(): void {
       const input = field.multiline
         ? document.createElement('textarea')
         : document.createElement('input');
+      input.dataset.fieldId = `content-${field.key}`;
       input.value = selected.content[field.key] ?? '';
       input.addEventListener('input', () => {
         updateSelectedItem((item) => {
@@ -695,8 +811,27 @@ function renderInspector(): void {
     });
   });
 
+  const slotsSection = document.createElement('section');
+  slotsSection.className = 'inspector__section';
+  slotsSection.innerHTML = '<h3>Slots</h3>';
+
+  if (schema.availableSlots.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'inspector__empty';
+    empty.textContent = 'Este componente no acepta children por slots.';
+    slotsSection.append(empty);
+  } else {
+    schema.availableSlots.forEach((slotName) => {
+      const itemCount = selected.slots[slotName]?.length || 0;
+      const row = document.createElement('p');
+      row.className = 'inspector__empty';
+      row.textContent = `${slotName}: ${itemCount} elemento(s)`;
+      slotsSection.append(row);
+    });
+  }
+
   actions.append(actionWrap);
-  inspectorFieldsEl.append(layoutSection, propSection, contentSection, actions);
+  inspectorFieldsEl.append(layoutSection, propSection, contentSection, slotsSection, actions);
 }
 
 function createPropControl(item: EditorItem, field: PropField): HTMLElement {
@@ -708,6 +843,7 @@ function createPropControl(item: EditorItem, field: PropField): HTMLElement {
 
     const input = document.createElement('input');
     input.type = 'checkbox';
+    input.dataset.fieldId = `prop-${field.key}`;
     input.checked = Boolean(currentValue);
 
     const label = document.createElement('label');
@@ -731,6 +867,7 @@ function createPropControl(item: EditorItem, field: PropField): HTMLElement {
     label.textContent = field.label;
 
     const select = document.createElement('select');
+    select.dataset.fieldId = `prop-${field.key}`;
     (field.options || []).forEach((optionValue) => {
       const option = document.createElement('option');
       option.value = optionValue;
@@ -761,6 +898,7 @@ function createPropControl(item: EditorItem, field: PropField): HTMLElement {
           next.props[field.key] = value;
         });
       },
+      `prop-${field.key}`,
     );
   }
 
@@ -774,6 +912,7 @@ function createPropControl(item: EditorItem, field: PropField): HTMLElement {
     field.type === 'textarea'
       ? document.createElement('textarea')
       : document.createElement('input');
+  input.dataset.fieldId = `prop-${field.key}`;
   input.value = String(currentValue ?? '');
   input.addEventListener('input', () => {
     updateSelectedItem((next) => {
@@ -793,6 +932,7 @@ function createNumberField(
   max: number,
   step: number,
   onChange: (value: number) => void,
+  fieldId: string,
 ): HTMLElement {
   const wrap = document.createElement('div');
   wrap.className = 'field';
@@ -803,6 +943,7 @@ function createNumberField(
 
   const input = document.createElement('input');
   input.id = `field-${key}`;
+  input.dataset.fieldId = fieldId;
   input.type = 'number';
   input.min = String(min);
   input.max = String(max);
@@ -820,14 +961,9 @@ function createNumberField(
 
 function updateSelectedItem(mutate: (item: EditorItem) => void): void {
   if (!state.selectedItemId) return;
-  const nextItems = state.items.map((item) => {
+  const nextItems = mapItems(state.items, (item) => {
     if (item.id !== state.selectedItemId) return item;
-    const draft: EditorItem = {
-      ...item,
-      props: { ...item.props },
-      content: { ...item.content },
-      layout: { ...item.layout },
-    };
+    const draft = cloneItem(item);
     mutate(draft);
     return draft;
   });
@@ -836,66 +972,252 @@ function updateSelectedItem(mutate: (item: EditorItem) => void): void {
 
 function createItem(type: DsComponent): EditorItem {
   const schema = schemas[type];
+  const slots = schema.availableSlots.reduce<Record<string, EditorItem[]>>((acc, slotName) => {
+    acc[slotName] = [];
+    return acc;
+  }, {});
+
   return {
     id: generateId(),
     type,
     props: { ...schema.defaultProps },
     content: { ...schema.defaultContent },
     layout: { colSpan: 12, rowSpan: 1 },
+    slots,
   };
 }
 
-function insertItemAtTarget(
-  items: EditorItem[],
-  item: EditorItem,
-  targetId: string | null,
-  position: 'before' | 'after',
-): EditorItem[] {
-  if (!targetId) return [...items, item];
+function renderCanvasItem(item: EditorItem): HTMLElement {
+  const schema = schemas[item.type];
+  const card = document.createElement('article');
+  card.className = 'canvas-item';
+  if (item.id === state.selectedItemId) card.classList.add('canvas-item--selected');
+  card.setAttribute('draggable', 'true');
+  card.dataset.itemId = item.id;
+  card.style.setProperty('--col-span', String(clamp(item.layout.colSpan, 1, 12)));
+  card.style.setProperty('--row-span', String(clamp(item.layout.rowSpan, 1, 4)));
 
-  const index = items.findIndex((entry) => entry.id === targetId);
-  if (index < 0) return [...items, item];
+  const meta = document.createElement('div');
+  meta.className = 'canvas-item__meta';
 
-  const nextItems = [...items];
-  const insertIndex = position === 'before' ? index : index + 1;
-  nextItems.splice(insertIndex, 0, item);
-  return nextItems;
-}
+  const name = document.createElement('span');
+  name.className = 'canvas-item__name';
+  name.textContent = `${schema.title} · ${item.layout.colSpan}/12`;
 
-function reorderItems(
-  items: EditorItem[],
-  dragId: string,
-  targetId: string | null,
-  position: 'before' | 'after',
-): EditorItem[] {
-  const fromIndex = items.findIndex((item) => item.id === dragId);
-  if (fromIndex < 0) return items;
+  const actions = document.createElement('div');
+  actions.className = 'canvas-item__actions';
+  actions.innerHTML = `
+    <button type="button" data-action="duplicate">Duplicar</button>
+    <button type="button" data-action="delete">Eliminar</button>
+  `;
 
-  if (!targetId) {
-    const next = [...items];
-    const [moved] = next.splice(fromIndex, 1);
-    next.push(moved);
-    return next;
+  meta.append(name, actions);
+
+  const previewWrap = document.createElement('div');
+  previewWrap.className = 'canvas-item__preview';
+  previewWrap.appendChild(createPreviewElement(item));
+
+  card.append(meta, previewWrap);
+
+  if (schema.availableSlots.length > 0) {
+    const slotList = document.createElement('div');
+    slotList.className = 'canvas-item__slots';
+
+    schema.availableSlots.forEach((slotName) => {
+      const section = document.createElement('section');
+      section.className = 'slot-section';
+
+      const label = document.createElement('p');
+      label.className = 'slot-section__title';
+      label.textContent = `Slot: ${slotName}`;
+
+      const zone = document.createElement('div');
+      zone.className = 'slot-dropzone';
+      zone.dataset.dropParentId = item.id;
+      zone.dataset.dropSlot = slotName;
+
+      const children = item.slots[slotName] || [];
+      if (children.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'slot-dropzone__empty';
+        empty.textContent = 'Suelta componentes aqui';
+        zone.appendChild(empty);
+      } else {
+        children.forEach((child) => {
+          zone.appendChild(renderCanvasItem(child));
+        });
+      }
+
+      section.append(label, zone);
+      slotList.appendChild(section);
+    });
+
+    card.appendChild(slotList);
   }
 
-  const targetIndex = items.findIndex((item) => item.id === targetId);
-  if (targetIndex < 0 || targetId === dragId) return items;
-
-  const next = [...items];
-  const [moved] = next.splice(fromIndex, 1);
-
-  let insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
-  if (fromIndex < targetIndex) insertIndex -= 1;
-  next.splice(insertIndex, 0, moved);
-
-  return next;
+  return card;
 }
 
-function clearDropIndicators(): void {
-  canvasEl.querySelectorAll<HTMLElement>('.canvas-item').forEach((card) => {
-    card.classList.remove('canvas-item--drop-before', 'canvas-item--drop-after');
-    delete card.dataset.dropPosition;
+function createPreviewElement(item: EditorItem): HTMLElement {
+  const schema = schemas[item.type];
+  const el = schema.createElement(item);
+
+  schema.availableSlots.forEach((slotName) => {
+    (item.slots[slotName] || []).forEach((child) => {
+      const childElement = createPreviewElement(child);
+      if (slotName !== ROOT_SLOT) {
+        childElement.setAttribute('slot', slotName);
+      } else {
+        childElement.removeAttribute('slot');
+      }
+      el.appendChild(childElement);
+    });
   });
+
+  return el;
+}
+
+function mapItems(items: EditorItem[], update: (item: EditorItem) => EditorItem): EditorItem[] {
+  return items.map((item) => {
+    const next = update(item);
+    const nextSlots = Object.entries(next.slots).reduce<Record<string, EditorItem[]>>(
+      (acc, [slotName, slotItems]) => {
+        acc[slotName] = mapItems(slotItems, update);
+        return acc;
+      },
+      {},
+    );
+    return { ...next, slots: nextSlots };
+  });
+}
+
+function removeItemById(
+  items: EditorItem[],
+  itemId: string,
+): { items: EditorItem[]; removed: EditorItem | null } {
+  let removed: EditorItem | null = null;
+  const nextItems: EditorItem[] = [];
+
+  items.forEach((item) => {
+    if (item.id === itemId) {
+      removed = item;
+      return;
+    }
+
+    const nextSlots: Record<string, EditorItem[]> = {};
+    Object.entries(item.slots).forEach(([slotName, slotItems]) => {
+      const result = removeItemById(slotItems, itemId);
+      if (!removed && result.removed) removed = result.removed;
+      nextSlots[slotName] = result.items;
+    });
+
+    nextItems.push({ ...item, slots: nextSlots });
+  });
+
+  return { items: nextItems, removed };
+}
+
+function insertItemAtSlot(
+  items: EditorItem[],
+  parentId: string | null,
+  slotName: string,
+  item: EditorItem,
+): EditorItem[] {
+  if (!parentId) return [...items, item];
+
+  return items.map((entry) => {
+    if (entry.id === parentId) {
+      const nextSlot = [...(entry.slots[slotName] || []), item];
+      return {
+        ...entry,
+        slots: {
+          ...entry.slots,
+          [slotName]: nextSlot,
+        },
+      };
+    }
+
+    const nextSlots = Object.entries(entry.slots).reduce<Record<string, EditorItem[]>>(
+      (acc, [name, slotItems]) => {
+        acc[name] = insertItemAtSlot(slotItems, parentId, slotName, item);
+        return acc;
+      },
+      {},
+    );
+
+    return {
+      ...entry,
+      slots: nextSlots,
+    };
+  });
+}
+
+function isDescendant(items: EditorItem[], ancestorId: string, targetId: string): boolean {
+  const ancestor = findItemById(items, ancestorId);
+  if (!ancestor) return false;
+  return Boolean(findItemById(Object.values(ancestor.slots).flat(), targetId));
+}
+
+function moveItemToSlot(
+  items: EditorItem[],
+  dragId: string,
+  targetParentId: string | null,
+  targetSlot: string,
+): EditorItem[] {
+  if (targetParentId === dragId) return items;
+  if (targetParentId && isDescendant(items, dragId, targetParentId)) return items;
+
+  const removed = removeItemById(items, dragId);
+  if (!removed.removed) return items;
+  return insertItemAtSlot(removed.items, targetParentId, targetSlot, removed.removed);
+}
+
+function findItemById(items: EditorItem[], itemId: string): EditorItem | null {
+  for (const item of items) {
+    if (item.id === itemId) return item;
+    const nested = findItemById(Object.values(item.slots).flat(), itemId);
+    if (nested) return nested;
+  }
+  return null;
+}
+
+function findItemLocation(
+  items: EditorItem[],
+  itemId: string,
+  parentId: string | null = null,
+  slotName: string = ROOT_SLOT,
+): { parentId: string | null; slotName: string } | null {
+  for (const item of items) {
+    if (item.id === itemId) {
+      return { parentId, slotName };
+    }
+
+    for (const [nextSlotName, slotItems] of Object.entries(item.slots)) {
+      const location = findItemLocation(slotItems, itemId, item.id, nextSlotName);
+      if (location) return location;
+    }
+  }
+
+  return null;
+}
+
+function cloneItem(item: EditorItem): EditorItem {
+  const nextSlots = Object.entries(item.slots).reduce<Record<string, EditorItem[]>>(
+    (acc, [slotName, slotItems]) => {
+      acc[slotName] = slotItems.map((slotItem) => cloneItem(slotItem));
+      return acc;
+    },
+    {},
+  );
+
+  return {
+    ...item,
+    id: generateId(),
+    props: { ...item.props },
+    content: { ...item.content },
+    layout: { ...item.layout },
+    slots: nextSlots,
+  };
 }
 
 function applyProps(el: HTMLElement, props: Record<string, PropValue>): void {
@@ -919,22 +1241,89 @@ function toKebabCase(value: string): string {
 }
 
 function setState(nextState: EditorState): void {
+  const focusSnapshot = captureInspectorFocus();
   state = nextState;
+  renderAll();
+  restoreInspectorFocus(focusSnapshot);
+}
+
+function setPreviewMode(nextValue: boolean): void {
+  isPreviewMode = nextValue;
+  window.localStorage.setItem(PREVIEW_STORAGE_KEY, isPreviewMode ? '1' : '0');
   renderAll();
 }
 
+function applyPreviewMode(): void {
+  document.body.classList.toggle('editor--preview', isPreviewMode);
+  editorLayout?.classList.toggle('editor-layout--preview', isPreviewMode);
+
+  if (previewToggleButton) {
+    previewToggleButton.textContent = isPreviewMode ? 'Salir de preview' : 'Preview';
+    previewToggleButton.setAttribute('aria-pressed', String(isPreviewMode));
+  }
+}
+
+function captureInspectorFocus(): InspectorFocusSnapshot | null {
+  const activeElement = document.activeElement;
+  if (!(activeElement instanceof HTMLElement)) return null;
+  if (!inspectorFieldsEl.contains(activeElement)) return null;
+
+  const fieldId = activeElement.dataset.fieldId;
+  if (!fieldId) return null;
+
+  if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
+    return {
+      fieldId,
+      selectionStart: activeElement.selectionStart,
+      selectionEnd: activeElement.selectionEnd,
+    };
+  }
+
+  return {
+    fieldId,
+    selectionStart: null,
+    selectionEnd: null,
+  };
+}
+
+function restoreInspectorFocus(snapshot: InspectorFocusSnapshot | null): void {
+  if (!snapshot) return;
+
+  const nextField = inspectorFieldsEl.querySelector<HTMLElement>(
+    `[data-field-id="${snapshot.fieldId}"]`,
+  );
+  if (!nextField) return;
+
+  nextField.focus();
+
+  if (
+    snapshot.selectionStart === null ||
+    snapshot.selectionEnd === null ||
+    !(nextField instanceof HTMLInputElement || nextField instanceof HTMLTextAreaElement)
+  ) {
+    return;
+  }
+
+  const inputType = nextField instanceof HTMLInputElement ? nextField.type : '';
+  if (inputType === 'checkbox' || inputType === 'radio') return;
+
+  try {
+    nextField.setSelectionRange(snapshot.selectionStart, snapshot.selectionEnd);
+  } catch {}
+}
+
 function persistState(): void {
-  window.localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(state));
+  window.localStorage.setItem(STORAGE_KEY_V3, JSON.stringify(state));
 }
 
 function loadState(): EditorState {
-  const rawV2 = window.localStorage.getItem(STORAGE_KEY_V2);
-  if (rawV2) {
+  const rawV3 = window.localStorage.getItem(STORAGE_KEY_V3);
+  if (rawV3) {
     try {
-      const parsed = JSON.parse(rawV2) as EditorState;
-      if (parsed && parsed.version === 2 && Array.isArray(parsed.items)) {
+      const parsed = JSON.parse(rawV3) as EditorState;
+      if (parsed && parsed.version === 3 && Array.isArray(parsed.items)) {
         return {
-          version: 2,
+          version: 3,
           selectedItemId: parsed.selectedItemId ?? null,
           grid: {
             columns: 12,
@@ -942,7 +1331,40 @@ function loadState(): EditorState {
             rowHeight: 1,
             showOverlay: Boolean(parsed.grid?.showOverlay ?? true),
           },
-          items: parsed.items.filter((item) => isDsComponent(item.type)),
+          items: parsed.items
+            .filter((item) => isDsComponent(item.type))
+            .map((item) => normalizeItem(item)),
+        };
+      }
+    } catch {
+      return createInitialState();
+    }
+  }
+
+  const rawV2 = window.localStorage.getItem(STORAGE_KEY_V2);
+  if (rawV2) {
+    try {
+      const parsed = JSON.parse(rawV2) as {
+        version?: number;
+        selectedItemId?: string | null;
+        grid?: { gap?: number; showOverlay?: boolean };
+        items?: Array<Partial<EditorItem> & { type?: unknown }>;
+      };
+      if (parsed && parsed.version === 2 && Array.isArray(parsed.items)) {
+        return {
+          version: 3,
+          selectedItemId: parsed.selectedItemId ?? null,
+          grid: {
+            columns: 12,
+            gap: clamp(Number(parsed.grid?.gap ?? 12), 6, 24),
+            rowHeight: 1,
+            showOverlay: Boolean(parsed.grid?.showOverlay ?? true),
+          },
+          items: parsed.items
+            .filter((item): item is Partial<EditorItem> & { type: DsComponent } =>
+              isDsComponent(item.type),
+            )
+            .map((item) => normalizeItem(item)),
         };
       }
     } catch {
@@ -980,7 +1402,7 @@ function migrateFromV1(): EditorState | null {
 
 function createInitialState(): EditorState {
   return {
-    version: 2,
+    version: 3,
     selectedItemId: null,
     grid: {
       columns: 12,
@@ -996,6 +1418,7 @@ function isDsComponent(value: unknown): value is DsComponent {
   return (
     typeof value === 'string' &&
     [
+      'iv-container',
       'iv-heading',
       'iv-text',
       'iv-button',
@@ -1009,6 +1432,39 @@ function isDsComponent(value: unknown): value is DsComponent {
       'iv-dialog',
     ].includes(value)
   );
+}
+
+function normalizeItem(item: Partial<EditorItem> & { type: DsComponent }): EditorItem {
+  const schema = schemas[item.type];
+  const slots = schema.availableSlots.reduce<Record<string, EditorItem[]>>((acc, slotName) => {
+    const rawSlot = item.slots?.[slotName] as
+      | Array<Partial<EditorItem> & { type?: unknown }>
+      | undefined;
+    acc[slotName] = Array.isArray(rawSlot)
+      ? rawSlot
+          .filter((slotItem) => isDsComponent(slotItem.type))
+          .map((slotItem) => normalizeItem(slotItem as Partial<EditorItem> & { type: DsComponent }))
+      : [];
+    return acc;
+  }, {});
+
+  return {
+    id: item.id && typeof item.id === 'string' ? item.id : generateId(),
+    type: item.type,
+    props: {
+      ...schema.defaultProps,
+      ...(item.props || {}),
+    },
+    content: {
+      ...schema.defaultContent,
+      ...(item.content || {}),
+    },
+    layout: {
+      colSpan: clamp(Number(item.layout?.colSpan ?? 12), 1, 12),
+      rowSpan: clamp(Number(item.layout?.rowSpan ?? 1), 1, 4),
+    },
+    slots,
+  };
 }
 
 function generateId(): string {
