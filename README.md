@@ -44,6 +44,11 @@ Ejemplo:
 
 Este repo incluye `netlify.toml` con:
 
-- build command: `corepack enable && pnpm install --frozen-lockfile && pnpm build:storybook`
-- publish dir: `apps/storybook/storybook-static`
+- build command: `corepack enable && pnpm install --frozen-lockfile && pnpm build:netlify`
+- publish dir: `netlify-dist`
 - Node: `20`
+
+Resultado del deploy:
+
+- `/` -> playground con `index.html` (demos de componentes)
+- `/storybook` -> documentacion Storybook

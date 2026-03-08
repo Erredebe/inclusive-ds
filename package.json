@@ -24,6 +24,8 @@
     "test:e2e": "turbo run test:e2e",
     "storybook": "pnpm --filter @inclusiv-ds/storybook storybook",
     "build:storybook": "pnpm --filter @inclusiv-ds/storybook build:storybook",
+    "build:playground": "pnpm --filter @inclusiv-ds/stencil-playground build",
+    "build:netlify": "node scripts/build-netlify.mjs",
     "changeset": "changeset",
     "version:packages": "changeset version",
     "release": "pnpm build && changeset publish",
