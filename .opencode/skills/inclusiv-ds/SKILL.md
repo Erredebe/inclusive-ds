@@ -96,6 +96,13 @@ Guía operativa para contribuir al monorepo de design system `inclusiv-ds` con c
 - Para cambios de API en componentes, seguir SemVer por paquete.
 - Base branch de changesets: `main`.
 
+## CDN y consumo por URL
+- Documentación oficial en `docs/CDN-CONTRACT.md`.
+- Rutas públicas soportadas: `/components/iv-button.js`, `/components/iv-input.js`, `/src/tokens.css`.
+- Proveedores: jsDelivr (primary), unpkg (fallback).
+- Validar después de release: `pnpm validate:cdn`.
+- El pipeline de release incluye validación CDN automáticamente.
+
 ## Checklist de PR
 - [ ] Alcance acotado al objetivo.
 - [ ] Tests/specs actualizados.

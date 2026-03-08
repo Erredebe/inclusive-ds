@@ -148,6 +148,89 @@ pnpm release
 
 ---
 
+## Uso por CDN
+
+Inclusiv DS puede consumirse directamente desde CDN sin necesidad de npm ni bundler. Esto es ideal para prototipos, demos o proyectos simples.
+
+### Proveedores CDN soportados
+
+| Proveedor | Uso | Notas |
+|-----------|-----|-------|
+| **jsDelivr** | Primary | Mejor rendimiento global, recomendado |
+| **unpkg** | Fallback | Disponibilidad garantizada |
+| **esm.sh** | Alternativa | Soporte nativo ESM |
+
+### Rutas de import
+
+Los paths públicos soportados para CDN son:
+
+- **@inclusiv-ds/button**: `https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@<version>/components/iv-button.js`
+- **@inclusiv-ds/input**: `https://cdn.jsdelivr.net/npm/@inclusiv-ds/input@<version>/components/iv-input.js`
+- **@inclusiv-ds/tokens**: `https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@<version>/src/tokens.css`
+
+> Ver documento completo de contrato CDN en `docs/CDN-CONTRACT.md`.
+
+### Ejemplo: solo button
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@0.1.0/src/tokens.css">
+  </head>
+  <body>
+    <iv-button version="v2" appearance="solid">Click me</iv-button>
+
+    <script type="module">
+      import { defineCustomElement as defineIvButton } from "https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@0.1.0/components/iv-button.js";
+      if (!customElements.get("iv-button")) defineIvButton();
+    </script>
+  </body>
+</html>
+```
+
+### Ejemplo: mezcla de versiones (button@2 + input@1)
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@0.1.0/src/tokens.css">
+  </head>
+  <body>
+    <iv-button version="v2" appearance="solid">Guardar</iv-button>
+    <iv-input version="v1" placeholder="Email"></iv-input>
+
+    <script type="module">
+      import { defineCustomElement as defineIvButton } from "https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@0.1.0/components/iv-button.js";
+      import { defineCustomElement as defineIvInput } from "https://cdn.jsdelivr.net/npm/@inclusiv-ds/input@0.1.0/components/iv-input.js";
+
+      if (!customElements.get("iv-button")) defineIvButton();
+      if (!customElements.get("iv-input")) defineIvInput();
+    </script>
+  </body>
+</html>
+```
+
+### Política de versiones para CDN
+
+| Entorno | Recomendación | Ejemplo |
+|---------|--------------|---------|
+| **Desarrollo** | `@major` para obtener última minor/patch | `@2` |
+| **Producción** | Versión exacta obligatoria | `@2.1.3` |
+
+> **Nunca uses `@latest` en producción** — no дает garantías de estabilidad.
+
+### Limitación importante
+
+**No es posible registrar dos versiones del mismo tag** (`iv-button` v1 y v2) en la misma página. El segundo `customElements.define()` sobrescribirá el primero.
+
+Si necesitas cambiar de versión:
+1. Usa la versión que necesites en producción.
+2. Migra gradualmente: actualiza tu código a v2 y luego cambia el import del paquete.
+
+---
+
 ## Contribución
 
 ### Flujo de trabajo
@@ -248,6 +331,33 @@ Los paquetes Stencil usan su propia compilación. Si ves errores de tipos, ejecu
 
 ```bash
 pnpm --filter @inclusiv-ds/button build
+```
+
+### CDN no carga / 404
+
+Si una URL de CDN devuelve 404:
+
+1. **Verifica la versión**: Asegúrate de que la versión publicada existe en npm.
+2. **Usa fallback**: Cambia de jsDelivr a unpkg.
+3. **Ejecuta validación**: `pnpm validate:cdn` para verificar el estado actual.
+
+### jsDelivr cache stale
+
+jsDelivr puede cachear versiones. Si ves comportamiento extraño tras un release:
+
+1. Añade un query param de versión: `.../iv-button.js?v=0.1.1`
+2. O espera ~1 hora (jsDelivr刷新el cache automáticamente).
+3. Para proyectos críticos, usa **exact con subpath** y pin de integridad.
+
+### Fallback a unpkg
+
+Si jsDelivr no responde, usa unpkg como fallback:
+
+```html
+<script type="module">
+  import { defineCustomElement } from "https://unpkg.com/@inclusiv-ds/button@0.1.0/components/iv-button.js";
+  // ...
+</script>
 ```
 
 ---

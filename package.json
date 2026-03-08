@@ -28,7 +28,8 @@
     "build:netlify": "node scripts/build-netlify.mjs",
     "changeset": "changeset",
     "version:packages": "changeset version",
-    "release": "pnpm build && changeset publish",
+    "release": "pnpm build && changeset publish && pnpm validate:cdn",
+    "validate:cdn": "node scripts/validate-cdn.mjs",
     "prepare": "husky"
   },
   "devDependencies": {
