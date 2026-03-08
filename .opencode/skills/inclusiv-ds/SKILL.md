@@ -1,3 +1,8 @@
+---
+name: inclusiv-ds
+description: Contribution guide for inclusiv-ds monorepo (Stencil design system)
+---
+
 # SKILL.md — Inclusiv DS
 
 ## Objetivo de este skill
