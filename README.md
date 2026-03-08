@@ -17,7 +17,7 @@ Inclusiv DS es un design system basado en Web Components generado con Stencil. S
 El sistema permite dos modos de instalación:
 
 - **Instalación completa**: `@inclusiv-ds/ui` (agrega todos los componentes y tokens)
-- **Instalación selectiva**: `@inclusiv-ds/button`, `@inclusiv-ds/input`, `@inclusiv-ds/tokens` (por componente)
+- **Instalación selectiva**: `@inclusiv-ds/button`, `@inclusiv-ds/input`, `@inclusiv-ds/badge`, `@inclusiv-ds/tokens` (por componente)
 
 Esta flexibilidad permite adoptar el design system de forma gradual sin instalar dependencias innecesarias.
 
@@ -25,15 +25,22 @@ Esta flexibilidad permite adoptar el design system de forma gradual sin instalar
 
 ## Componentes disponibles
 
-| Paquete | Descripción |
-|---------|-------------|
-| `@inclusiv-ds/button` | Componente `iv-button` con versiones v1 y v2 |
-| `@inclusiv-ds/input` | Componente `iv-input` con versiones v1 y v2 |
-| `@inclusiv-ds/tokens` | Tokens de diseño (colores, spacing, radii) |
-| `@inclusiv-ds/ui` | Paquete agregador con todos los componentes |
-| `@inclusiv-ds/react` | Wrapper React |
-| `@inclusiv-ds/vue` | Wrapper Vue |
-| `@inclusiv-ds/angular` | Wrapper Angular |
+| Paquete                   | Descripción                                 |
+| ------------------------- | ------------------------------------------- |
+| `@inclusiv-ds/button`     | Átomo `iv-button` con versiones v1 y v2     |
+| `@inclusiv-ds/input`      | Átomo `iv-input` con versiones v1 y v2      |
+| `@inclusiv-ds/badge`      | Átomo `iv-badge` para estados visuales      |
+| `@inclusiv-ds/spinner`    | Átomo `iv-spinner` para carga               |
+| `@inclusiv-ds/typography` | Átomos `iv-text`, `iv-label`, `iv-heading`  |
+| `@inclusiv-ds/checkbox`   | Molécula `iv-checkbox`                      |
+| `@inclusiv-ds/radio`      | Moléculas `iv-radio` y `iv-radio-group`     |
+| `@inclusiv-ds/toggle`     | Molécula `iv-toggle`                        |
+| `@inclusiv-ds/form-field` | Molécula `iv-form-field`                    |
+| `@inclusiv-ds/tokens`     | Tokens de diseño (colores, spacing, radii)  |
+| `@inclusiv-ds/ui`         | Paquete agregador con todos los componentes |
+| `@inclusiv-ds/react`      | Wrapper React                               |
+| `@inclusiv-ds/vue`        | Wrapper Vue                                 |
+| `@inclusiv-ds/angular`    | Wrapper Angular                             |
 
 ### Ejemplo de uso
 
@@ -42,12 +49,44 @@ Esta flexibilidad permite adoptar el design system de forma gradual sin instalar
 <iv-button version="v2" appearance="danger" size="lg">Eliminar</iv-button>
 
 <iv-input version="v1" placeholder="Email"></iv-input>
-<iv-input version="v2" label="Correo" placeholder="tu@email.com" helper-text="Obligatorio"></iv-input>
+<iv-input
+  version="v2"
+  label="Correo"
+  placeholder="tu@email.com"
+  helper-text="Obligatorio"
+></iv-input>
 ```
 
 ---
 
 ## Arquitectura del monorepo
+
+### Clasificación atómica
+
+```
+packages/
+├── atoms/
+│   ├── button/
+│   ├── input/
+│   ├── badge/
+│   ├── spinner/
+│   └── typography/
+├── molecules/
+│   ├── checkbox/
+│   ├── radio/
+│   ├── toggle/
+│   └── form-field/
+├── organisms/
+│   └── (reservado para componentes complejos)
+├── adapters/
+│   ├── react/
+│   ├── vue/
+│   └── angular/
+├── tokens/
+└── ui/
+```
+
+### Árbol general
 
 ```
 inclusiv-ds/
@@ -55,13 +94,13 @@ inclusiv-ds/
 │   ├── stencil-playground/   # Demo local/playground con Vite
 │   └── storybook/            # Documentación interactiva
 ├── packages/
-│   ├── button/               # Web component iv-button (Stencil)
-│   ├── input/                # Web component iv-input (Stencil)
-│   ├── tokens/              # Tokens de diseño (TS + CSS)
+│   ├── atoms/                # Componentes base (Stencil)
+│   ├── molecules/            # Componentes compuestos (Stencil)
+│   ├── organisms/            # Componentes complejos (reservado)
+│   ├── adapters/             # Wrappers por framework
+│   ├── tokens/               # Tokens de diseño (TS + CSS)
 │   ├── ui/                   # Paquete agregador
-│   ├── react/                # Wrapper React
-│   ├── vue/                  # Wrapper Vue
-│   └── angular/              # Wrapper Angular
+│   └── ...
 ├── scripts/
 │   ├── build-netlify.mjs    # Build combinado para Netlify
 │   └── start.mjs            # Script de inicio (stencil/storybook)
@@ -97,19 +136,19 @@ pnpm install
 
 ### Comandos disponibles
 
-| Comando | Descripción |
-|---------|-------------|
-| `pnpm dev` | Inicia todos los paquetes en modo desarrollo (parallel) |
-| `pnpm start` | Inicia el servidor por defecto (Storybook) |
-| `pnpm run start stencil` | Inicia el playground Stencil |
-| `pnpm run start storybook` | Inicia Storybook en desarrollo |
-| `pnpm build` | Build de todos los paquetes |
-| `pnpm lint` | Lint de todo el proyecto |
-| `pnpm test` | Ejecuta tests unitarios |
-| `pnpm test:e2e` | Ejecuta tests e2e de Storybook |
-| `pnpm storybook` | Inicia Storybook en desarrollo |
-| `pnpm build:storybook` | Build de Storybook para producción |
-| `pnpm build:netlify` | Build completo para despliegue en Netlify |
+| Comando                    | Descripción                                             |
+| -------------------------- | ------------------------------------------------------- |
+| `pnpm dev`                 | Inicia todos los paquetes en modo desarrollo (parallel) |
+| `pnpm start`               | Inicia el servidor por defecto (Storybook)              |
+| `pnpm run start stencil`   | Inicia el playground Stencil                            |
+| `pnpm run start storybook` | Inicia Storybook en desarrollo                          |
+| `pnpm build`               | Build de todos los paquetes                             |
+| `pnpm lint`                | Lint de todo el proyecto                                |
+| `pnpm test`                | Ejecuta tests unitarios                                 |
+| `pnpm test:e2e`            | Ejecuta tests e2e de Storybook                          |
+| `pnpm storybook`           | Inicia Storybook en desarrollo                          |
+| `pnpm build:storybook`     | Build de Storybook para producción                      |
+| `pnpm build:netlify`       | Build completo para despliegue en Netlify               |
 
 ---
 
@@ -154,11 +193,11 @@ Inclusiv DS puede consumirse directamente desde CDN sin necesidad de npm ni bund
 
 ### Proveedores CDN soportados
 
-| Proveedor | Uso | Notas |
-|-----------|-----|-------|
-| **jsDelivr** | Primary | Mejor rendimiento global, recomendado |
-| **unpkg** | Fallback | Disponibilidad garantizada |
-| **esm.sh** | Alternativa | Soporte nativo ESM |
+| Proveedor    | Uso         | Notas                                 |
+| ------------ | ----------- | ------------------------------------- |
+| **jsDelivr** | Primary     | Mejor rendimiento global, recomendado |
+| **unpkg**    | Fallback    | Disponibilidad garantizada            |
+| **esm.sh**   | Alternativa | Soporte nativo ESM                    |
 
 ### Rutas de import
 
@@ -176,14 +215,17 @@ Los paths públicos soportados para CDN son:
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@0.1.0/src/tokens.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@0.1.0/src/tokens.css"
+    />
   </head>
   <body>
     <iv-button version="v2" appearance="solid">Click me</iv-button>
 
     <script type="module">
-      import { defineCustomElement as defineIvButton } from "https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@0.1.0/components/iv-button.js";
-      if (!customElements.get("iv-button")) defineIvButton();
+      import { defineCustomElement as defineIvButton } from 'https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@0.1.0/components/iv-button.js';
+      if (!customElements.get('iv-button')) defineIvButton();
     </script>
   </body>
 </html>
@@ -195,18 +237,21 @@ Los paths públicos soportados para CDN son:
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@0.1.0/src/tokens.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@0.1.0/src/tokens.css"
+    />
   </head>
   <body>
     <iv-button version="v2" appearance="solid">Guardar</iv-button>
     <iv-input version="v1" placeholder="Email"></iv-input>
 
     <script type="module">
-      import { defineCustomElement as defineIvButton } from "https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@0.1.0/components/iv-button.js";
-      import { defineCustomElement as defineIvInput } from "https://cdn.jsdelivr.net/npm/@inclusiv-ds/input@0.1.0/components/iv-input.js";
+      import { defineCustomElement as defineIvButton } from 'https://cdn.jsdelivr.net/npm/@inclusiv-ds/button@0.1.0/components/iv-button.js';
+      import { defineCustomElement as defineIvInput } from 'https://cdn.jsdelivr.net/npm/@inclusiv-ds/input@0.1.0/components/iv-input.js';
 
-      if (!customElements.get("iv-button")) defineIvButton();
-      if (!customElements.get("iv-input")) defineIvInput();
+      if (!customElements.get('iv-button')) defineIvButton();
+      if (!customElements.get('iv-input')) defineIvInput();
     </script>
   </body>
 </html>
@@ -214,10 +259,10 @@ Los paths públicos soportados para CDN son:
 
 ### Política de versiones para CDN
 
-| Entorno | Recomendación | Ejemplo |
-|---------|--------------|---------|
-| **Desarrollo** | `@major` para obtener última minor/patch | `@2` |
-| **Producción** | Versión exacta obligatoria | `@2.1.3` |
+| Entorno        | Recomendación                            | Ejemplo  |
+| -------------- | ---------------------------------------- | -------- |
+| **Desarrollo** | `@major` para obtener última minor/patch | `@2`     |
+| **Producción** | Versión exacta obligatoria               | `@2.1.3` |
 
 > **Nunca uses `@latest` en producción** — no дает garantías de estabilidad.
 
@@ -226,6 +271,7 @@ Los paths públicos soportados para CDN son:
 **No es posible registrar dos versiones del mismo tag** (`iv-button` v1 y v2) en la misma página. El segundo `customElements.define()` sobrescribirá el primero.
 
 Si necesitas cambiar de versión:
+
 1. Usa la versión que necesites en producción.
 2. Migra gradualmente: actualiza tu código a v2 y luego cambia el import del paquete.
 
@@ -277,6 +323,8 @@ Los siguientes directorios y archivos están excluidos de git y no deben incluir
 - `netlify-dist/`
 - `packages/*/.stencil/`
 - `packages/*/www/`
+- `packages/*/*/.stencil/`
+- `packages/*/*/www/`
 - `.turbo/`
 - `playwright-report/`
 - `test-results/`
@@ -355,7 +403,7 @@ Si jsDelivr no responde, usa unpkg como fallback:
 
 ```html
 <script type="module">
-  import { defineCustomElement } from "https://unpkg.com/@inclusiv-ds/button@0.1.0/components/iv-button.js";
+  import { defineCustomElement } from 'https://unpkg.com/@inclusiv-ds/button@0.1.0/components/iv-button.js';
   // ...
 </script>
 ```
