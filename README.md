@@ -36,6 +36,7 @@ Esta flexibilidad permite adoptar el design system de forma gradual sin instalar
 | `@inclusiv-ds/radio`      | Moléculas `iv-radio` y `iv-radio-group`     |
 | `@inclusiv-ds/toggle`     | Molécula `iv-toggle`                        |
 | `@inclusiv-ds/form-field` | Molécula `iv-form-field`                    |
+| `@inclusiv-ds/dialog`     | Organismo `iv-dialog` (modal/drawer/list)   |
 | `@inclusiv-ds/tokens`     | Tokens de diseño (colores, spacing, radii)  |
 | `@inclusiv-ds/ui`         | Paquete agregador con todos los componentes |
 | `@inclusiv-ds/react`      | Wrapper React                               |
@@ -77,7 +78,7 @@ packages/
 │   ├── toggle/
 │   └── form-field/
 ├── organisms/
-│   └── (reservado para componentes complejos)
+│   └── dialog/
 ├── adapters/
 │   ├── react/
 │   ├── vue/

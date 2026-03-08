@@ -1,0 +1,40 @@
+{
+  "name": "@inclusiv-ds/dialog",
+  "version": "0.1.0",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.js",
+  "types": "dist/types/components.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./components/iv-dialog": {
+      "import": "./dist/components/iv-dialog.js"
+    },
+    "./loader": {
+      "import": "./dist/loader/index.js",
+      "require": "./dist/loader/index.cjs.js"
+    }
+  },
+  "collection": "dist/collection/collection-manifest.json",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "stencil build --dev --watch --serve --port 3341 --no-open",
+    "build": "stencil build",
+    "dev": "stencil build --dev --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "stencil test --spec"
+  },
+  "dependencies": {
+    "@inclusiv-ds/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@stencil/core": "^4.35.1",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "jest-cli": "^29.7.0"
+  }
+}

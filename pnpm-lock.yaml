@@ -56,6 +56,9 @@ importers:
       '@inclusiv-ds/checkbox':
         specifier: workspace:*
         version: link:../../packages/molecules/checkbox
+      '@inclusiv-ds/dialog':
+        specifier: workspace:*
+        version: link:../../packages/organisms/dialog
       '@inclusiv-ds/form-field':
         specifier: workspace:*
         version: link:../../packages/molecules/form-field
@@ -93,6 +96,9 @@ importers:
       '@inclusiv-ds/checkbox':
         specifier: workspace:*
         version: link:../../packages/molecules/checkbox
+      '@inclusiv-ds/dialog':
+        specifier: workspace:*
+        version: link:../../packages/organisms/dialog
       '@inclusiv-ds/form-field':
         specifier: workspace:*
         version: link:../../packages/molecules/form-field
@@ -350,6 +356,25 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.19.15)
 
+  packages/organisms/dialog:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
   packages/tokens: {}
 
   packages/ui:
@@ -357,6 +382,9 @@ importers:
       '@inclusiv-ds/button':
         specifier: workspace:*
         version: link:../atoms/button
+      '@inclusiv-ds/dialog':
+        specifier: workspace:*
+        version: link:../organisms/dialog
       '@inclusiv-ds/input':
         specifier: workspace:*
         version: link:../atoms/input

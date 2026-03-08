@@ -96,8 +96,104 @@
           </iv-form-field>
         </div>
       </section>
+
+      <section class="card">
+        <h2>iv-dialog (modal, drawer, list, alert)</h2>
+        <div class="col" style="max-width: 100%">
+          <div class="row">
+            <iv-button id="open-dialog-modal">Abrir modal</iv-button>
+            <iv-button id="open-dialog-drawer" variant="ghost">Abrir drawer</iv-button>
+            <iv-button id="open-dialog-alert" version="v2" appearance="danger"
+              >Abrir alert</iv-button
+            >
+          </div>
+
+          <iv-input
+            id="dialog-list-anchor"
+            version="v2"
+            label="Buscador"
+            placeholder="Escribe para sugerencias"
+          ></iv-input>
+
+          <iv-dialog id="demo-dialog-modal" mode="modal" aria-labelledby="demo-dialog-modal-title">
+            <h3 slot="title" id="demo-dialog-modal-title" style="margin: 0">Editar perfil</h3>
+            <p style="margin: 0">
+              Este dialog usa los metodos nativos <code>showModal()</code> y <code>close()</code>.
+            </p>
+            <div slot="actions" class="row" style="justify-content: flex-end; width: 100%">
+              <iv-button id="close-dialog-modal" variant="ghost">Cancelar</iv-button>
+              <iv-button id="save-dialog-modal">Guardar</iv-button>
+            </div>
+          </iv-dialog>
+
+          <iv-dialog
+            id="demo-dialog-drawer"
+            mode="drawer"
+            placement="right"
+            aria-labelledby="demo-dialog-drawer-title"
+          >
+            <h3 slot="title" id="demo-dialog-drawer-title" style="margin: 0">Filtros</h3>
+            <p style="margin: 0">Drawer lateral con backdrop y cierre por click externo.</p>
+            <iv-input version="v2" label="Buscar" placeholder="Nombre"></iv-input>
+            <div slot="actions" class="row" style="justify-content: flex-end; width: 100%">
+              <iv-button id="close-dialog-drawer">Cerrar</iv-button>
+            </div>
+          </iv-dialog>
+
+          <iv-dialog id="demo-dialog-list" mode="list" anchor="#dialog-list-anchor" open>
+            <ul style="list-style: none; margin: 0; padding: 0; display: grid; gap: 4px">
+              <li><button type="button">Argentina</button></li>
+              <li><button type="button">Chile</button></li>
+              <li><button type="button">Uruguay</button></li>
+            </ul>
+          </iv-dialog>
+
+          <iv-dialog id="demo-dialog-alert" mode="alert" label="Confirmacion critica">
+            <h3 slot="title" style="margin: 0">Eliminar cuenta</h3>
+            <p style="margin: 0">Esta accion no se puede deshacer.</p>
+            <div slot="actions" class="row" style="justify-content: flex-end; width: 100%">
+              <iv-button id="close-dialog-alert" variant="ghost">Cancelar</iv-button>
+              <iv-button id="confirm-dialog-alert" version="v2" appearance="danger">
+                Eliminar
+              </iv-button>
+            </div>
+          </iv-dialog>
+        </div>
+      </section>
     </main>
 
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      const modal = document.getElementById('demo-dialog-modal');
+      const drawer = document.getElementById('demo-dialog-drawer');
+      const alertDialog = document.getElementById('demo-dialog-alert');
+
+      document
+        .getElementById('open-dialog-modal')
+        ?.addEventListener('click', () => modal?.showModal?.());
+      document
+        .getElementById('close-dialog-modal')
+        ?.addEventListener('click', () => modal?.close?.('cancel'));
+      document
+        .getElementById('save-dialog-modal')
+        ?.addEventListener('click', () => modal?.close?.('save'));
+
+      document
+        .getElementById('open-dialog-drawer')
+        ?.addEventListener('click', () => drawer?.showModal?.());
+      document
+        .getElementById('close-dialog-drawer')
+        ?.addEventListener('click', () => drawer?.close?.());
+
+      document
+        .getElementById('open-dialog-alert')
+        ?.addEventListener('click', () => alertDialog?.showModal?.());
+      document
+        .getElementById('close-dialog-alert')
+        ?.addEventListener('click', () => alertDialog?.close?.('cancel'));
+      document
+        .getElementById('confirm-dialog-alert')
+        ?.addEventListener('click', () => alertDialog?.close?.('confirm'));
+    </script>
   </body>
 </html>

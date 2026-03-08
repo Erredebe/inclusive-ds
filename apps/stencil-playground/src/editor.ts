@@ -11,6 +11,7 @@ import { defineCustomElement as defineIvRadio } from '@inclusiv-ds/radio/compone
 import { defineCustomElement as defineIvRadioGroup } from '@inclusiv-ds/radio/components/iv-radio-group';
 import { defineCustomElement as defineIvToggle } from '@inclusiv-ds/toggle/components/iv-toggle';
 import { defineCustomElement as defineIvFormField } from '@inclusiv-ds/form-field/components/iv-form-field';
+import { defineCustomElement as defineIvDialog } from '@inclusiv-ds/dialog/components/iv-dialog';
 
 type DsComponent =
   | 'iv-heading'
@@ -22,7 +23,8 @@ type DsComponent =
   | 'iv-checkbox'
   | 'iv-radio-group'
   | 'iv-toggle'
-  | 'iv-form-field';
+  | 'iv-form-field'
+  | 'iv-dialog';
 
 const STORAGE_KEY = 'ids-editor-layout-v1';
 
@@ -38,6 +40,7 @@ if (!customElements.get('iv-radio')) defineIvRadio();
 if (!customElements.get('iv-radio-group')) defineIvRadioGroup();
 if (!customElements.get('iv-toggle')) defineIvToggle();
 if (!customElements.get('iv-form-field')) defineIvFormField();
+if (!customElements.get('iv-dialog')) defineIvDialog();
 
 const palette = document.getElementById('palette');
 const canvas = document.getElementById('drop-canvas');
@@ -183,6 +186,21 @@ function createComponentElement(component: DsComponent): HTMLElement {
 
       return field;
     }
+    case 'iv-dialog': {
+      const dialog = document.createElement('iv-dialog');
+      dialog.setAttribute('mode', 'modal');
+      dialog.setAttribute('open', '');
+
+      const title = document.createElement('h3');
+      title.setAttribute('slot', 'title');
+      title.textContent = 'Dialog del editor';
+
+      const content = document.createElement('p');
+      content.textContent = 'Contenido de ejemplo dentro de iv-dialog.';
+
+      dialog.append(title, content);
+      return dialog;
+    }
     default: {
       const fallback = document.createElement('div');
       fallback.textContent = component;
@@ -220,6 +238,7 @@ function isDsComponent(value: unknown): value is DsComponent {
     'iv-radio-group',
     'iv-toggle',
     'iv-form-field',
+    'iv-dialog',
   ];
   return typeof value === 'string' && allowed.includes(value as DsComponent);
 }

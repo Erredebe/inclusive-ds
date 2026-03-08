@@ -8,3 +8,8 @@ storybook-static/
 netlify-dist/
 packages/*/.stencil/
 packages/*/www/
+packages/*/*/.stencil/
+packages/*/*/www/
+packages/*/*/loader/
+packages/*/*/src/components.d.ts
+packages/*/*/src/components/**/readme.md
