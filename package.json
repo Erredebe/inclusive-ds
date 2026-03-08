@@ -1,0 +1,46 @@
+{
+  "name": "inclusiv-ds",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Inclusiv DS monorepo",
+  "packageManager": "pnpm@9.1.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node scripts/start.mjs",
+    "start:storybook": "pnpm storybook",
+    "start:stencil": "pnpm --filter @inclusiv-ds/button build && pnpm --filter @inclusiv-ds/input build && pnpm --filter @inclusiv-ds/stencil-playground dev",
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "stencil": "turbo run dev --filter=@inclusiv-ds/button --filter=@inclusiv-ds/input --parallel",
+    "stencil:build": "pnpm --filter @inclusiv-ds/button build && pnpm --filter @inclusiv-ds/input build",
+    "stencil:button": "pnpm --filter @inclusiv-ds/button start",
+    "stencil:input": "pnpm --filter @inclusiv-ds/input start",
+    "lint": "turbo run lint",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "storybook": "pnpm --filter @inclusiv-ds/storybook storybook",
+    "build:storybook": "pnpm --filter @inclusiv-ds/storybook build:storybook",
+    "changeset": "changeset",
+    "version:packages": "changeset version",
+    "release": "pnpm build && changeset publish",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^22.15.3",
+    "@changesets/cli": "^2.28.1",
+    "@playwright/test": "^1.52.0",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.56.0",
+    "vitest": "^3.1.1"
+  }
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iv-input playground</title>
+    <script type="module" src="/build/ivinput.esm.js"></script>
+    <script nomodule src="/build/ivinput.js"></script>
+  </head>
+  <body style="font-family: sans-serif; padding: 24px; display: grid; gap: 12px; max-width: 440px;">
+    <h1>iv-input</h1>
+
+    <iv-input placeholder="V1 input"></iv-input>
+
+    <iv-input
+      version="v2"
+      label="Correo"
+      placeholder="tu@email.com"
+      helper-text="Obligatorio"
+    ></iv-input>
+
+    <iv-input
+      version="v2"
+      state="error"
+      label="Correo"
+      placeholder="tu@email.com"
+      helper-text="Formato invalido"
+    ></iv-input>
+  </body>
+</html>

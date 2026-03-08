@@ -1,0 +1,24 @@
+{
+  "name": "@inclusiv-ds/vue",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run --passWithNoTests"
+  },
+  "peerDependencies": {
+    "vue": ">=3"
+  },
+  "dependencies": {
+    "@inclusiv-ds/button": "workspace:*",
+    "@inclusiv-ds/input": "workspace:*",
+    "@inclusiv-ds/tokens": "workspace:*"
+  }
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inclusiv DS - Stencil Playground</title>
+  </head>
+  <body>
+    <main class="layout">
+      <h1>Stencil Playground</h1>
+
+      <section class="card">
+        <h2>iv-button</h2>
+        <div class="row">
+          <iv-button>V1 Primary</iv-button>
+          <iv-button variant="ghost">V1 Ghost</iv-button>
+          <iv-button version="v2" appearance="solid">V2 Solid</iv-button>
+          <iv-button version="v2" appearance="danger" size="lg">V2 Danger</iv-button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>iv-input</h2>
+        <div class="col">
+          <iv-input placeholder="V1 input"></iv-input>
+          <iv-input
+            version="v2"
+            label="Correo"
+            placeholder="tu@email.com"
+            helper-text="Obligatorio"
+          ></iv-input>
+          <iv-input
+            version="v2"
+            state="error"
+            label="Correo"
+            placeholder="tu@email.com"
+            helper-text="Formato invalido"
+          ></iv-input>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
