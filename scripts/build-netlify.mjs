@@ -13,8 +13,7 @@ const run = (cmd) => {
 
 rmSync(outDir, { recursive: true, force: true });
 
-run('pnpm --filter @inclusiv-ds/button build');
-run('pnpm --filter @inclusiv-ds/input build');
+run('pnpm stencil:build');
 run('pnpm --filter @inclusiv-ds/stencil-playground build');
 run('pnpm --filter @inclusiv-ds/storybook build:storybook');
 
