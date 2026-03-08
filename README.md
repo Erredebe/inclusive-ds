@@ -44,5 +44,6 @@ Ejemplo:
 
 Este repo incluye `netlify.toml` con:
 
-- build command: `pnpm install && pnpm build:storybook`
+- build command: `corepack enable && pnpm install --frozen-lockfile && pnpm build:storybook`
 - publish dir: `apps/storybook/storybook-static`
+- Node: `20`
