@@ -38,4 +38,25 @@ describe('iv-button', () => {
       </iv-button>
     `);
   });
+
+  it('sets aria-busy and disables button while loading', async () => {
+    const page = await newSpecPage({
+      components: [InclusivButton],
+      html: '<iv-button version="v2" loading>Guardando</iv-button>',
+    });
+
+    const button = page.root?.shadowRoot?.querySelector('button');
+    expect(button?.getAttribute('aria-busy')).toBe('true');
+    expect(button?.hasAttribute('disabled')).toBe(true);
+  });
+
+  it('sets aria-label in icon-only mode', async () => {
+    const page = await newSpecPage({
+      components: [InclusivButton],
+      html: '<iv-button version="v2" icon-only aria-label="Cerrar">✕</iv-button>',
+    });
+
+    const button = page.root?.shadowRoot?.querySelector('button');
+    expect(button?.getAttribute('aria-label')).toBe('Cerrar');
+  });
 });

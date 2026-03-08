@@ -29,3 +29,17 @@ export const V2Error: Story = {
   render: () =>
     '<iv-input version="v2" label="Correo" placeholder="tu@email.com" helper-text="Formato invalido" state="error"></iv-input>',
 };
+
+export const V2WithAffixes: Story = {
+  render: () => `
+    <iv-input version="v2" label="Monto" value="123" helper-text="Ingresa un valor valido">
+      <span slot="prefix">$</span>
+      <span slot="suffix">USD</span>
+    </iv-input>
+  `,
+};
+
+export const V2ClearableCounter: Story = {
+  render: () =>
+    '<iv-input version="v2" label="Usuario" value="inclusiv" clearable max-length="20" helper-text="Maximo 20 caracteres"></iv-input>',
+};

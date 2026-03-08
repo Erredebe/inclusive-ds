@@ -32,6 +32,13 @@
           <iv-button variant="ghost">V1 Ghost</iv-button>
           <iv-button version="v2" appearance="solid">V2 Solid</iv-button>
           <iv-button version="v2" appearance="danger" size="lg">V2 Danger</iv-button>
+          <iv-button version="v2" appearance="tertiary">V2 Tertiary</iv-button>
+          <iv-button version="v2" appearance="link">V2 Link</iv-button>
+          <iv-button version="v2" loading>Guardando</iv-button>
+          <iv-button version="v2" icon-only aria-label="Cerrar">✕</iv-button>
+        </div>
+        <div class="col" style="margin-top: 12px; max-width: 320px">
+          <iv-button version="v2" full-width>V2 Full Width</iv-button>
         </div>
       </section>
 
@@ -51,6 +58,18 @@
             label="Correo"
             placeholder="tu@email.com"
             helper-text="Formato invalido"
+          ></iv-input>
+          <iv-input version="v2" label="Monto" value="123" helper-text="Ingresa un valor valido">
+            <span slot="prefix">$</span>
+            <span slot="suffix">USD</span>
+          </iv-input>
+          <iv-input
+            version="v2"
+            label="Usuario"
+            value="inclusiv"
+            clearable
+            max-length="20"
+            helper-text="Maximo 20 caracteres"
           ></iv-input>
         </div>
       </section>

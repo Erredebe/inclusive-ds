@@ -47,6 +47,19 @@
   box-shadow: var(--ids-shadow-md, 0 8px 20px rgba(4, 17, 16, 0.14));
 }
 
+.button-v2--tertiary {
+  background: color-mix(in srgb, var(--ids-color-primary, #0f766e) 12%, #ffffff);
+  color: var(--ids-color-text, #0b1f1d);
+}
+
+.button-v2--link {
+  background: transparent;
+  color: var(--ids-color-primary, #0f766e);
+  border-color: transparent;
+  border-radius: 0.5rem;
+  text-decoration: underline;
+}
+
 .button-v2--outline {
   background: #ffffff;
   color: #0f766e;
@@ -57,6 +70,44 @@
   background: linear-gradient(180deg, #f43f5e, #be123c);
   color: #ffffff;
   box-shadow: var(--ids-shadow-md, 0 8px 20px rgba(4, 17, 16, 0.14));
+}
+
+.button-v2--full-width {
+  width: 100%;
+  justify-content: center;
+}
+
+.button-v2--icon-only {
+  aspect-ratio: 1;
+  display: inline-grid;
+  min-width: 2.5rem;
+  place-items: center;
+  padding: 0;
+}
+
+.button-v2--loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ids-space-xs, 0.25rem);
+}
+
+.button-v2__loader {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: button-spin var(--ids-motion-duration-slow, 320ms) linear infinite;
+}
+
+@keyframes button-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .button-v2--sm {

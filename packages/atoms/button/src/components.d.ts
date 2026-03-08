@@ -10,11 +10,27 @@ export namespace Components {
         /**
           * @default 'solid'
          */
-        "appearance": 'solid' | 'outline' | 'danger';
+        "appearance": 'solid' | 'outline' | 'danger' | 'tertiary' | 'link';
+        /**
+          * @default ''
+         */
+        "ariaLabel": string;
         /**
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default false
+         */
+        "fullWidth": boolean;
+        /**
+          * @default false
+         */
+        "iconOnly": boolean;
+        /**
+          * @default false
+         */
+        "loading": boolean;
         /**
           * @default 'md'
          */
@@ -45,11 +61,27 @@ declare namespace LocalJSX {
         /**
           * @default 'solid'
          */
-        "appearance"?: 'solid' | 'outline' | 'danger';
+        "appearance"?: 'solid' | 'outline' | 'danger' | 'tertiary' | 'link';
+        /**
+          * @default ''
+         */
+        "ariaLabel"?: string;
         /**
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "fullWidth"?: boolean;
+        /**
+          * @default false
+         */
+        "iconOnly"?: boolean;
+        /**
+          * @default false
+         */
+        "loading"?: boolean;
         /**
           * @default 'md'
          */
@@ -67,9 +99,13 @@ declare namespace LocalJSX {
     interface IvButtonAttributes {
         "version": 'v1' | 'v2';
         "variant": 'primary' | 'ghost';
-        "appearance": 'solid' | 'outline' | 'danger';
+        "appearance": 'solid' | 'outline' | 'danger' | 'tertiary' | 'link';
         "size": 'sm' | 'md' | 'lg';
         "disabled": boolean;
+        "loading": boolean;
+        "fullWidth": boolean;
+        "iconOnly": boolean;
+        "ariaLabel": string;
     }
 
     interface IntrinsicElements {

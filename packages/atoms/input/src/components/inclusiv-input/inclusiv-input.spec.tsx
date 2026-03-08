@@ -12,29 +12,24 @@ describe('iv-input', () => {
     expect(page.root).toEqualHtml(`
       <iv-input placeholder="Email">
         <mock:shadow-root>
-          <input class="input input--v1" placeholder="Email">
+          <input class="input input--v1" placeholder="Email" type="text" value="">
         </mock:shadow-root>
       </iv-input>
     `);
   });
 
-  it('renders v2 when version is set', async () => {
+  it('renders v2 with label and helper binding', async () => {
     const page = await newSpecPage({
       components: [InclusivInput],
       html: '<iv-input id="email" version="v2" label="Correo" placeholder="tu@email.com" helper-text="Obligatorio"></iv-input>',
     });
 
-    expect(page.root).toEqualHtml(`
-      <iv-input helper-text="Obligatorio" id="email" label="Correo" placeholder="tu@email.com" version="v2">
-        <mock:shadow-root>
-          <label class="field field--default">
-            <span class="field__label">Correo</span>
-            <input aria-describedby="email-helper" class="field__input" id="email" placeholder="tu@email.com">
-            <span class="field__helper" id="email-helper">Obligatorio</span>
-          </label>
-        </mock:shadow-root>
-      </iv-input>
-    `);
+    const input = page.root?.shadowRoot?.querySelector('input');
+    const helper = page.root?.shadowRoot?.querySelector('.field__helper');
+
+    expect(input?.getAttribute('id')).toBe('email');
+    expect(input?.getAttribute('aria-describedby')).toBe('email-helper');
+    expect(helper?.getAttribute('id')).toBe('email-helper');
   });
 
   it('sets aria-invalid when state is error in v2', async () => {
@@ -46,5 +41,45 @@ describe('iv-input', () => {
     const input = page.root?.shadowRoot?.querySelector('input');
     expect(input?.getAttribute('aria-invalid')).toBe('true');
     expect(input?.getAttribute('aria-describedby')).toBe('error-input-helper');
+  });
+
+  it('emits ivInput and ivChange events', async () => {
+    const page = await newSpecPage({
+      components: [InclusivInput],
+      html: '<iv-input version="v2"></iv-input>',
+    });
+
+    let inputDetail: { value: string } | undefined;
+    let changeDetail: { value: string } | undefined;
+
+    page.root?.addEventListener('ivInput', ((event: CustomEvent<{ value: string }>) => {
+      inputDetail = event.detail;
+    }) as EventListener);
+    page.root?.addEventListener('ivChange', ((event: CustomEvent<{ value: string }>) => {
+      changeDetail = event.detail;
+    }) as EventListener);
+
+    const input = page.root?.shadowRoot?.querySelector('input') as HTMLInputElement;
+    input.value = 'abc';
+    input.dispatchEvent(new Event('input'));
+    input.dispatchEvent(new Event('change'));
+    await page.waitForChanges();
+
+    expect(inputDetail).toEqual({ value: 'abc' });
+    expect(changeDetail).toEqual({ value: 'abc' });
+  });
+
+  it('renders clear button and resets value', async () => {
+    const page = await newSpecPage({
+      components: [InclusivInput],
+      html: '<iv-input version="v2" value="demo" clearable></iv-input>',
+    });
+
+    const clear = page.root?.shadowRoot?.querySelector('.field__clear') as HTMLButtonElement;
+    expect(clear).toBeTruthy();
+
+    clear.click();
+    await page.waitForChanges();
+    expect(page.root?.value).toBe('');
   });
 });

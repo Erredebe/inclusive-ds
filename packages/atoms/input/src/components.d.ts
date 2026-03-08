@@ -8,29 +8,77 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface IvInput {
         /**
+          * @default false
+         */
+        "clearable": boolean;
+        /**
           * @default ''
          */
         "helperText": string;
+        /**
+          * @default false
+         */
+        "invalid": boolean;
         /**
           * @default ''
          */
         "label": string;
         /**
+          * @default 0
+         */
+        "maxLength": number;
+        /**
+          * @default ''
+         */
+        "name": string;
+        /**
           * @default ''
          */
         "placeholder": string;
         /**
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * @default false
+         */
+        "required": boolean;
+        /**
           * @default 'default'
          */
         "state": 'default' | 'error' | 'success';
+        /**
+          * @default 'text'
+         */
+        "type": string;
+        /**
+          * @default ''
+         */
+        "value": string;
         /**
           * @default 'v1'
          */
         "version": 'v1' | 'v2';
     }
 }
+export interface IvInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLIvInputElement;
+}
 declare global {
+    interface HTMLIvInputElementEventMap {
+        "ivInput": { value: string };
+        "ivChange": { value: string };
+    }
     interface HTMLIvInputElement extends Components.IvInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLIvInputElementEventMap>(type: K, listener: (this: HTMLIvInputElement, ev: IvInputCustomEvent<HTMLIvInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLIvInputElementEventMap>(type: K, listener: (this: HTMLIvInputElement, ev: IvInputCustomEvent<HTMLIvInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLIvInputElement: {
         prototype: HTMLIvInputElement;
@@ -43,21 +91,55 @@ declare global {
 declare namespace LocalJSX {
     interface IvInput {
         /**
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
           * @default ''
          */
         "helperText"?: string;
+        /**
+          * @default false
+         */
+        "invalid"?: boolean;
         /**
           * @default ''
          */
         "label"?: string;
         /**
+          * @default 0
+         */
+        "maxLength"?: number;
+        /**
+          * @default ''
+         */
+        "name"?: string;
+        "onIvChange"?: (event: IvInputCustomEvent<{ value: string }>) => void;
+        "onIvInput"?: (event: IvInputCustomEvent<{ value: string }>) => void;
+        /**
           * @default ''
          */
         "placeholder"?: string;
         /**
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+        /**
           * @default 'default'
          */
         "state"?: 'default' | 'error' | 'success';
+        /**
+          * @default 'text'
+         */
+        "type"?: string;
+        /**
+          * @default ''
+         */
+        "value"?: string;
         /**
           * @default 'v1'
          */
@@ -67,6 +149,14 @@ declare namespace LocalJSX {
     interface IvInputAttributes {
         "version": 'v1' | 'v2';
         "placeholder": string;
+        "type": string;
+        "value": string;
+        "name": string;
+        "readonly": boolean;
+        "required": boolean;
+        "invalid": boolean;
+        "clearable": boolean;
+        "maxLength": number;
         "label": string;
         "helperText": string;
         "state": 'default' | 'error' | 'success';

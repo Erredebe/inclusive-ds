@@ -19,26 +19,47 @@
   color: #0b1f1d;
 }
 
+.field__control {
+  align-items: center;
+  border: 1px solid #cde7e3;
+  border-radius: 0.7rem;
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0 0.45rem;
+}
+
+.field__affix {
+  color: var(--ids-color-muted, #6b7280);
+  display: inline-flex;
+  font-size: 0.85rem;
+}
+
 .field__label {
   font-size: 0.85rem;
   font-weight: 700;
 }
 
 .field__input {
-  border: 1px solid #cde7e3;
-  border-radius: 0.7rem;
-  padding: 0.65rem 0.85rem;
+  border: 0;
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.4rem;
   font: inherit;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .field__input:focus {
   outline: none;
+}
+
+.field__control:focus-within {
   border-color: #0f766e;
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
 }
 
-.field--error .field__input {
+.field--error .field__control {
   border-color: #e11d48;
 }
 
@@ -46,7 +67,7 @@
   color: #be123c;
 }
 
-.field--success .field__input {
+.field--success .field__control {
   border-color: #16a34a;
 }
 
@@ -56,4 +77,21 @@
 
 .field__helper {
   font-size: 0.75rem;
+}
+
+.field__counter {
+  color: var(--ids-color-muted, #6b7280);
+  font-size: 0.75rem;
+  justify-self: end;
+}
+
+.field__clear {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ids-color-muted, #6b7280);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
 }
