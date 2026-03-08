@@ -1,0 +1,13 @@
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-space-sm, 0.5rem);
+}
+
+.radio-group__label {
+  font-family: inherit;
+  font-size: var(--ids-font-size-body, 1rem);
+  font-weight: 500;
+  color: var(--ids-color-text, #0b1f1d);
+  margin: 0 0 var(--ids-space-xs, 0.25rem);
+}

@@ -4,6 +4,11 @@
   --ids-color-text: #0b1f1d;
   --ids-color-surface: #f6fbfa;
   --ids-color-border: #cde7e3;
+  --ids-color-muted: #6b7280;
+  --ids-color-success: #16a34a;
+  --ids-color-warning: #ca8a04;
+  --ids-color-error: #dc2626;
+  --ids-color-info: #2563eb;
 
   --ids-space-xs: 0.25rem;
   --ids-space-sm: 0.5rem;
@@ -12,4 +17,15 @@
 
   --ids-radius-sm: 0.375rem;
   --ids-radius-md: 0.5rem;
+
+  --ids-font-size-h1: 2.25rem;
+  --ids-font-size-h2: 1.875rem;
+  --ids-font-size-h3: 1.5rem;
+  --ids-font-size-h4: 1.25rem;
+  --ids-font-size-h5: 1.125rem;
+  --ids-font-size-h6: 1rem;
+  --ids-font-size-body: 1rem;
+  --ids-font-size-caption: 0.875rem;
+  --ids-font-size-overline: 0.75rem;
+  --ids-font-size-label: 0.875rem;
 }

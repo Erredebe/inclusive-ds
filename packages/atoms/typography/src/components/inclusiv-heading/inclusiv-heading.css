@@ -1,0 +1,31 @@
+.heading {
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--ids-color-text, #0b1f1d);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.heading--h1 {
+  font-size: var(--ids-font-size-h1, 2.25rem);
+}
+
+.heading--h2 {
+  font-size: var(--ids-font-size-h2, 1.875rem);
+}
+
+.heading--h3 {
+  font-size: var(--ids-font-size-h3, 1.5rem);
+}
+
+.heading--h4 {
+  font-size: var(--ids-font-size-h4, 1.25rem);
+}
+
+.heading--h5 {
+  font-size: var(--ids-font-size-h5, 1.125rem);
+}
+
+.heading--h6 {
+  font-size: var(--ids-font-size-h6, 1rem);
+}

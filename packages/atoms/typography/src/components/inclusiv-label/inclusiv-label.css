@@ -1,0 +1,17 @@
+.label {
+  display: block;
+  font-family: inherit;
+  font-size: var(--ids-font-size-label, 0.875rem);
+  font-weight: 500;
+  color: var(--ids-color-text, #0b1f1d);
+  margin-bottom: var(--ids-space-xs, 0.25rem);
+}
+
+.label--required .label__required {
+  color: var(--ids-color-error, #dc2626);
+  margin-left: 2px;
+}
+
+.label--disabled {
+  opacity: 0.5;
+}

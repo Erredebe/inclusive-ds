@@ -49,10 +49,10 @@ importers:
     dependencies:
       '@inclusiv-ds/button':
         specifier: workspace:*
-        version: link:../../packages/button
+        version: link:../../packages/atoms/button
       '@inclusiv-ds/input':
         specifier: workspace:*
-        version: link:../../packages/input
+        version: link:../../packages/atoms/input
       '@inclusiv-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -65,10 +65,10 @@ importers:
     dependencies:
       '@inclusiv-ds/button':
         specifier: workspace:*
-        version: link:../../packages/button
+        version: link:../../packages/atoms/button
       '@inclusiv-ds/input':
         specifier: workspace:*
-        version: link:../../packages/input
+        version: link:../../packages/atoms/input
       '@inclusiv-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -89,70 +89,32 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(@types/node@22.19.15)
 
-  packages/angular:
+  packages/adapters/angular:
     dependencies:
       '@angular/core':
         specifier: '>=17'
         version: 21.2.1(rxjs@7.8.2)
       '@inclusiv-ds/button':
         specifier: workspace:*
-        version: link:../button
+        version: link:../../atoms/button
       '@inclusiv-ds/input':
         specifier: workspace:*
-        version: link:../input
+        version: link:../../atoms/input
       '@inclusiv-ds/tokens':
         specifier: workspace:*
-        version: link:../tokens
+        version: link:../../tokens
 
-  packages/button:
-    dependencies:
-      '@inclusiv-ds/tokens':
-        specifier: workspace:*
-        version: link:../tokens
-    devDependencies:
-      '@stencil/core':
-        specifier: ^4.35.1
-        version: 4.43.2
-      '@types/jest':
-        specifier: ^29.5.14
-        version: 29.5.14
-      jest:
-        specifier: ^29.7.0
-        version: 29.7.0(@types/node@22.19.15)
-      jest-cli:
-        specifier: ^29.7.0
-        version: 29.7.0(@types/node@22.19.15)
-
-  packages/input:
-    dependencies:
-      '@inclusiv-ds/tokens':
-        specifier: workspace:*
-        version: link:../tokens
-    devDependencies:
-      '@stencil/core':
-        specifier: ^4.35.1
-        version: 4.43.2
-      '@types/jest':
-        specifier: ^29.5.14
-        version: 29.5.14
-      jest:
-        specifier: ^29.7.0
-        version: 29.7.0(@types/node@22.19.15)
-      jest-cli:
-        specifier: ^29.7.0
-        version: 29.7.0(@types/node@22.19.15)
-
-  packages/react:
+  packages/adapters/react:
     dependencies:
       '@inclusiv-ds/button':
         specifier: workspace:*
-        version: link:../button
+        version: link:../../atoms/button
       '@inclusiv-ds/input':
         specifier: workspace:*
-        version: link:../input
+        version: link:../../atoms/input
       '@inclusiv-ds/tokens':
         specifier: workspace:*
-        version: link:../tokens
+        version: link:../../tokens
       react:
         specifier: '>=18'
         version: 19.2.4
@@ -160,34 +122,205 @@ importers:
         specifier: '>=18'
         version: 19.2.4(react@19.2.4)
 
+  packages/adapters/vue:
+    dependencies:
+      '@inclusiv-ds/button':
+        specifier: workspace:*
+        version: link:../../atoms/button
+      '@inclusiv-ds/input':
+        specifier: workspace:*
+        version: link:../../atoms/input
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+      vue:
+        specifier: '>=3'
+        version: 3.5.29(typescript@5.9.3)
+
+  packages/atoms/badge:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/atoms/button:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/atoms/input:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/atoms/spinner:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/atoms/typography:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/molecules/checkbox:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/molecules/form-field:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/molecules/radio:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
+  packages/molecules/toggle:
+    dependencies:
+      '@inclusiv-ds/tokens':
+        specifier: workspace:*
+        version: link:../../tokens
+    devDependencies:
+      '@stencil/core':
+        specifier: ^4.35.1
+        version: 4.43.2
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+      jest-cli:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.15)
+
   packages/tokens: {}
 
   packages/ui:
     dependencies:
       '@inclusiv-ds/button':
         specifier: workspace:*
-        version: link:../button
+        version: link:../atoms/button
       '@inclusiv-ds/input':
         specifier: workspace:*
-        version: link:../input
+        version: link:../atoms/input
       '@inclusiv-ds/tokens':
         specifier: workspace:*
         version: link:../tokens
-
-  packages/vue:
-    dependencies:
-      '@inclusiv-ds/button':
-        specifier: workspace:*
-        version: link:../button
-      '@inclusiv-ds/input':
-        specifier: workspace:*
-        version: link:../input
-      '@inclusiv-ds/tokens':
-        specifier: workspace:*
-        version: link:../tokens
-      vue:
-        specifier: '>=3'
-        version: 3.5.29(typescript@5.9.3)
 
 packages:
 

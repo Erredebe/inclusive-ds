@@ -1,0 +1,34 @@
+.text {
+  font-family: inherit;
+  color: var(--ids-color-text, #0b1f1d);
+  margin: 0;
+}
+
+.text--body {
+  font-size: var(--ids-font-size-body, 1rem);
+  line-height: 1.5;
+}
+
+.text--caption {
+  font-size: var(--ids-font-size-caption, 0.875rem);
+  line-height: 1.4;
+}
+
+.text--overline {
+  font-size: var(--ids-font-size-overline, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text--default {
+  color: var(--ids-color-text, #0b1f1d);
+}
+
+.text--muted {
+  color: var(--ids-color-muted, #6b7280);
+}
+
+.text--primary {
+  color: var(--ids-color-primary, #0f766e);
+}
