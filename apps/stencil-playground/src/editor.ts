@@ -728,7 +728,7 @@ function renderCanvas(): void {
       previewItem.className = 'canvas-preview-item';
       previewItem.style.setProperty('--col-span', String(clamp(item.layout.colSpan, 1, 12)));
       previewItem.style.setProperty('--row-span', String(clamp(item.layout.rowSpan, 1, 4)));
-      previewItem.appendChild(createPreviewElement(item));
+      previewItem.appendChild(createPreviewElement(item, true, 'preview'));
       canvasEl.appendChild(previewItem);
     });
     return;
@@ -1186,7 +1186,7 @@ function renderCanvasItem(item: EditorItem): HTMLElement {
 
   const previewWrap = document.createElement('div');
   previewWrap.className = 'canvas-item__preview';
-  previewWrap.appendChild(createPreviewElement(item, false));
+  previewWrap.appendChild(createPreviewElement(item, false, 'editor'));
 
   card.append(meta, previewWrap);
 
@@ -1319,9 +1319,20 @@ function renderSlotTextNode(
   return wrap;
 }
 
-function createPreviewElement(item: EditorItem, includeChildren = true): HTMLElement {
+type RenderContext = 'editor' | 'preview';
+
+function createPreviewElement(
+  item: EditorItem,
+  includeChildren = true,
+  context: RenderContext = 'preview',
+): HTMLElement {
   const schema = schemas[item.type];
   const el = schema.createElement(item);
+
+  if (context === 'editor' && item.type === 'iv-dialog') {
+    el.removeAttribute('open');
+    el.setAttribute('inert', '');
+  }
 
   if (!includeChildren) return el;
 
@@ -1340,7 +1351,7 @@ function createPreviewElement(item: EditorItem, includeChildren = true): HTMLEle
         return;
       }
 
-      const childElement = createPreviewElement(child.item, true);
+      const childElement = createPreviewElement(child.item, true, context);
       if (slotName !== ROOT_SLOT) {
         childElement.setAttribute('slot', slotName);
       } else {
