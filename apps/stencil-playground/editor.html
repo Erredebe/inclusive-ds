@@ -6,11 +6,7 @@
     <title>Inclusiv DS - Editor</title>
     <style>
       :root {
-        font-family:
-          Inter,
-          Segoe UI,
-          Arial,
-          sans-serif;
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
       }
 
       * {
@@ -20,16 +16,18 @@
       body {
         margin: 0;
         color: #0b1f1d;
-        background: linear-gradient(180deg, #ecf7f4 0%, #f8fcfb 100%);
+        background:
+          radial-gradient(circle at 0% 0%, #d6efe8 0%, transparent 35%),
+          linear-gradient(180deg, #ecf7f4 0%, #f8fcfb 100%);
       }
 
       .editor-layout {
         display: grid;
-        grid-template-columns: 280px 1fr;
+        grid-template-columns: 280px 1fr 320px;
         min-height: 100vh;
       }
 
-      .sidebar {
+      .panel {
         border-right: 1px solid #cde7e3;
         background: #ffffff;
         padding: 16px;
@@ -38,18 +36,24 @@
         gap: 16px;
       }
 
-      .sidebar__header h1 {
+      .panel--right {
+        border-right: 0;
+        border-left: 1px solid #cde7e3;
+      }
+
+      .panel__header h1,
+      .panel__header h2 {
         margin: 0;
         font-size: 1.25rem;
       }
 
-      .sidebar__header p {
+      .panel__header p {
         margin: 8px 0 10px;
         color: #4b5563;
         font-size: 0.9rem;
       }
 
-      .sidebar__header a {
+      .panel__header a {
         color: #0f766e;
         text-decoration: none;
         font-weight: 600;
@@ -76,7 +80,7 @@
       }
 
       .workspace {
-        padding: 20px;
+        padding: 20px 18px;
         display: grid;
         grid-template-rows: auto 1fr;
         gap: 12px;
@@ -86,6 +90,26 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #4b5563;
+      }
+
+      .toolbar-controls label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+      }
+
+      .toolbar-controls input[type='range'] {
+        width: 120px;
       }
 
       .clear-btn {
@@ -105,6 +129,14 @@
         align-content: start;
         gap: 12px;
         min-height: 320px;
+        position: relative;
+      }
+
+      .canvas--show-grid {
+        background-image:
+          linear-gradient(to right, rgba(12, 116, 109, 0.09) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(12, 116, 109, 0.06) 1px, transparent 1px);
+        background-size: calc(100% / 12) 24px;
       }
 
       .canvas--active {
@@ -120,8 +152,130 @@
       .canvas-item {
         border: 1px solid #e0efec;
         border-radius: 10px;
-        padding: 12px;
+        padding: 10px;
         background: #fcfefd;
+        grid-column: span var(--col-span, 12);
+        grid-row: span var(--row-span, 1);
+        cursor: grab;
+        transition: box-shadow 0.2s ease;
+      }
+
+      .canvas-item:active {
+        cursor: grabbing;
+      }
+
+      .canvas-item--selected {
+        border-color: #0f766e;
+        box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.12);
+      }
+
+      .canvas-item--drop-before {
+        box-shadow: inset 0 3px 0 #0f766e;
+      }
+
+      .canvas-item--drop-after {
+        box-shadow: inset 0 -3px 0 #0f766e;
+      }
+
+      .canvas-item__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .canvas-item__name {
+        font-size: 0.8rem;
+        color: #4b5563;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .canvas-item__actions {
+        display: inline-flex;
+        gap: 4px;
+      }
+
+      .canvas-item__actions button {
+        border: 1px solid #d9ebe7;
+        border-radius: 6px;
+        background: #fff;
+        color: #355b56;
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 0.75rem;
+      }
+
+      .inspector {
+        align-content: start;
+        overflow: auto;
+      }
+
+      .inspector__empty {
+        margin: 0;
+        color: #6b7280;
+      }
+
+      .inspector__section {
+        border: 1px solid #dfeeea;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #fbfefd;
+      }
+
+      .inspector__section h3 {
+        margin: 0 0 10px;
+        font-size: 0.95rem;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+
+      .field:last-child {
+        margin-bottom: 0;
+      }
+
+      .field label {
+        font-size: 0.82rem;
+        color: #4b5563;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        border: 1px solid #cde7e3;
+        border-radius: 8px;
+        padding: 8px;
+        font: inherit;
+        background: #fff;
+      }
+
+      .field--checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .field--checkbox label {
+        margin: 0;
+      }
+
+      .inspector__actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .inspector__actions button {
+        border: 1px solid #cde7e3;
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 10px;
+        cursor: pointer;
       }
 
       @media (max-width: 900px) {
@@ -129,19 +283,24 @@
           grid-template-columns: 1fr;
         }
 
-        .sidebar {
+        .panel {
           border-right: 0;
           border-bottom: 1px solid #cde7e3;
+        }
+
+        .panel--right {
+          border-left: 0;
+          border-top: 1px solid #cde7e3;
         }
       }
     </style>
   </head>
   <body>
     <div class="editor-layout">
-      <aside class="sidebar">
-        <div class="sidebar__header">
+      <aside class="panel">
+        <div class="panel__header">
           <h1>Editor</h1>
-          <p>Arrastra componentes al lienzo para construir una composicion.</p>
+          <p>Arrastra componentes al lienzo, reordena y personaliza todas sus props.</p>
           <a href="/">Volver al playground</a>
         </div>
 
@@ -169,12 +328,32 @@
       <main class="workspace">
         <div class="workspace__toolbar">
           <strong>Lienzo</strong>
+          <div class="toolbar-controls">
+            <label>
+              <input id="toggle-grid" type="checkbox" checked />
+              Mostrar grid
+            </label>
+            <label>
+              Gap
+              <input id="grid-gap" type="range" min="6" max="24" value="12" />
+            </label>
+          </div>
           <button id="clear-canvas" class="clear-btn" type="button">Limpiar</button>
         </div>
-        <section class="canvas" id="drop-canvas">
+        <section class="canvas canvas--show-grid" id="drop-canvas">
           <p class="canvas__empty">Suelta aqui los componentes para empezar.</p>
         </section>
       </main>
+
+      <aside class="panel panel--right inspector">
+        <div class="panel__header">
+          <h2>Inspector</h2>
+          <p id="inspector-subtitle">Selecciona un bloque para editar sus propiedades.</p>
+        </div>
+        <div id="inspector-fields">
+          <p class="inspector__empty">Selecciona un componente del lienzo.</p>
+        </div>
+      </aside>
     </div>
 
     <script type="module" src="/src/editor.ts"></script>
