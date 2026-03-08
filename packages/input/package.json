@@ -9,6 +9,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs.js"
     },
+    "./components/iv-input": {
+      "import": "./dist/components/iv-input.js"
+    },
     "./loader": {
       "import": "./dist/loader/index.js",
       "require": "./dist/loader/index.cjs.js"

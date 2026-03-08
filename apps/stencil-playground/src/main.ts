@@ -1,9 +1,14 @@
 import '@inclusiv-ds/tokens/src/tokens.css';
-import { defineCustomElements as defineButton } from '@inclusiv-ds/button/loader';
-import { defineCustomElements as defineInput } from '@inclusiv-ds/input/loader';
+import { defineCustomElement as defineIvButton } from '@inclusiv-ds/button/components/iv-button';
+import { defineCustomElement as defineIvInput } from '@inclusiv-ds/input/components/iv-input';
 
-defineButton();
-defineInput();
+if (!customElements.get('iv-button')) {
+  defineIvButton();
+}
+
+if (!customElements.get('iv-input')) {
+  defineIvInput();
+}
 
 const style = document.createElement('style');
 style.textContent = `
