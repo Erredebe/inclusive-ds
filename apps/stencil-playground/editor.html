@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inclusiv DS - Editor</title>
+    <style>
+      :root {
+        font-family:
+          Inter,
+          Segoe UI,
+          Arial,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: #0b1f1d;
+        background: linear-gradient(180deg, #ecf7f4 0%, #f8fcfb 100%);
+      }
+
+      .editor-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        border-right: 1px solid #cde7e3;
+        background: #ffffff;
+        padding: 16px;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 16px;
+      }
+
+      .sidebar__header h1 {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .sidebar__header p {
+        margin: 8px 0 10px;
+        color: #4b5563;
+        font-size: 0.9rem;
+      }
+
+      .sidebar__header a {
+        color: #0f766e;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .palette {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .palette-item {
+        border: 1px solid #cde7e3;
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: #f7fbfa;
+        text-align: left;
+        cursor: grab;
+        font-size: 0.95rem;
+      }
+
+      .palette-item:active {
+        cursor: grabbing;
+      }
+
+      .workspace {
+        padding: 20px;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 12px;
+      }
+
+      .workspace__toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .clear-btn {
+        border: 1px solid #cde7e3;
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
+      .canvas {
+        border: 2px dashed #b8ddd6;
+        border-radius: 14px;
+        background: #fff;
+        padding: 14px;
+        display: grid;
+        align-content: start;
+        gap: 12px;
+        min-height: 320px;
+      }
+
+      .canvas--active {
+        border-color: #0f766e;
+        background: #f0fbf8;
+      }
+
+      .canvas__empty {
+        margin: 0;
+        color: #6b7280;
+      }
+
+      .canvas-item {
+        border: 1px solid #e0efec;
+        border-radius: 10px;
+        padding: 12px;
+        background: #fcfefd;
+      }
+
+      @media (max-width: 900px) {
+        .editor-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: 0;
+          border-bottom: 1px solid #cde7e3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="editor-layout">
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <h1>Editor</h1>
+          <p>Arrastra componentes al lienzo para construir una composicion.</p>
+          <a href="/">Volver al playground</a>
+        </div>
+
+        <div class="palette" id="palette">
+          <button class="palette-item" draggable="true" data-component="iv-heading">Heading</button>
+          <button class="palette-item" draggable="true" data-component="iv-text">Text</button>
+          <button class="palette-item" draggable="true" data-component="iv-button">Button</button>
+          <button class="palette-item" draggable="true" data-component="iv-input">Input</button>
+          <button class="palette-item" draggable="true" data-component="iv-badge">Badge</button>
+          <button class="palette-item" draggable="true" data-component="iv-spinner">Spinner</button>
+          <button class="palette-item" draggable="true" data-component="iv-checkbox">
+            Checkbox
+          </button>
+          <button class="palette-item" draggable="true" data-component="iv-radio-group">
+            Radio Group
+          </button>
+          <button class="palette-item" draggable="true" data-component="iv-toggle">Toggle</button>
+          <button class="palette-item" draggable="true" data-component="iv-form-field">
+            Form Field
+          </button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="workspace__toolbar">
+          <strong>Lienzo</strong>
+          <button id="clear-canvas" class="clear-btn" type="button">Limpiar</button>
+        </div>
+        <section class="canvas" id="drop-canvas">
+          <p class="canvas__empty">Suelta aqui los componentes para empezar.</p>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/src/editor.ts"></script>
+  </body>
+</html>
