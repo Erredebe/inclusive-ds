@@ -5,4 +5,6 @@ playwright-report/
 test-results/
 .turbo/
 storybook-static/
+packages/*/.stencil/
+packages/*/www/
 pnpm-lock.yaml
