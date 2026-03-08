@@ -22,7 +22,7 @@ Inclusiv DS es un design system basado en Web Components generado con Stencil. S
 El sistema permite dos modos de instalación:
 
 - **Instalación completa**: `@inclusiv-ds/ui` (agrega todos los componentes y tokens)
-- **Instalación selectiva**: `@inclusiv-ds/button`, `@inclusiv-ds/input`, `@inclusiv-ds/badge`, `@inclusiv-ds/tokens` (por componente)
+- **Instalación selectiva**: `@inclusiv-ds/button`, `@inclusiv-ds/input`, `@inclusiv-ds/textarea`, `@inclusiv-ds/select`, `@inclusiv-ds/alert`, `@inclusiv-ds/toast`, `@inclusiv-ds/badge`, `@inclusiv-ds/tokens` (por componente)
 
 Esta flexibilidad permite adoptar el design system de forma gradual sin instalar dependencias innecesarias.
 
@@ -34,6 +34,9 @@ Esta flexibilidad permite adoptar el design system de forma gradual sin instalar
 | ------------------------- | ------------------------------------------- |
 | `@inclusiv-ds/button`     | Átomo `iv-button` con versiones v1 y v2     |
 | `@inclusiv-ds/input`      | Átomo `iv-input` con versiones v1 y v2      |
+| `@inclusiv-ds/textarea`   | Átomo `iv-textarea` para texto multilínea   |
+| `@inclusiv-ds/select`     | Átomo `iv-select` para selección simple     |
+| `@inclusiv-ds/alert`      | Átomo `iv-alert` para mensajes persistentes |
 | `@inclusiv-ds/badge`      | Átomo `iv-badge` para estados visuales      |
 | `@inclusiv-ds/spinner`    | Átomo `iv-spinner` para carga               |
 | `@inclusiv-ds/typography` | Átomos `iv-text`, `iv-label`, `iv-heading`  |
@@ -42,6 +45,7 @@ Esta flexibilidad permite adoptar el design system de forma gradual sin instalar
 | `@inclusiv-ds/toggle`     | Molécula `iv-toggle`                        |
 | `@inclusiv-ds/form-field` | Molécula `iv-form-field`                    |
 | `@inclusiv-ds/dialog`     | Organismo `iv-dialog` (modal/drawer/list)   |
+| `@inclusiv-ds/toast`      | Organismo `iv-toast` para feedback efímero  |
 | `@inclusiv-ds/tokens`     | Tokens de diseño (colores, spacing, radii)  |
 | `@inclusiv-ds/ui`         | Paquete agregador con todos los componentes |
 | `@inclusiv-ds/react`      | Wrapper React                               |
@@ -74,6 +78,9 @@ packages/
 ├── atoms/
 │   ├── button/
 │   ├── input/
+│   ├── textarea/
+│   ├── select/
+│   ├── alert/
 │   ├── badge/
 │   ├── spinner/
 │   └── typography/
@@ -83,7 +90,8 @@ packages/
 │   ├── toggle/
 │   └── form-field/
 ├── organisms/
-│   └── dialog/
+│   ├── dialog/
+│   └── toast/
 ├── adapters/
 │   ├── react/
 │   ├── vue/

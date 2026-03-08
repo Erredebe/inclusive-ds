@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iv-select playground</title>
+    <script type="module" src="/build/ivselect.esm.js"></script>
+    <script nomodule src="/build/ivselect.js"></script>
+  </head>
+  <body style="font-family: sans-serif; padding: 24px; display: grid; gap: 12px; max-width: 480px">
+    <h1>iv-select</h1>
+
+    <iv-select>
+      <option value="">Selecciona un pais</option>
+      <option value="ar">Argentina</option>
+      <option value="cl">Chile</option>
+      <option value="uy">Uruguay</option>
+    </iv-select>
+
+    <iv-select version="v2" label="Pais" helper-text="Selecciona una opcion" value="ar">
+      <option value="">Selecciona un pais</option>
+      <option value="ar">Argentina</option>
+      <option value="cl">Chile</option>
+      <option value="uy">Uruguay</option>
+    </iv-select>
+  </body>
+</html>

@@ -7,6 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@inclusiv-ds/alert": "workspace:*",
     "@inclusiv-ds/badge": "workspace:*",
     "@inclusiv-ds/button": "workspace:*",
     "@inclusiv-ds/checkbox": "workspace:*",
@@ -14,8 +15,11 @@
     "@inclusiv-ds/dialog": "workspace:*",
     "@inclusiv-ds/form-field": "workspace:*",
     "@inclusiv-ds/input": "workspace:*",
+    "@inclusiv-ds/select": "workspace:*",
+    "@inclusiv-ds/textarea": "workspace:*",
     "@inclusiv-ds/radio": "workspace:*",
     "@inclusiv-ds/spinner": "workspace:*",
+    "@inclusiv-ds/toast": "workspace:*",
     "@inclusiv-ds/toggle": "workspace:*",
     "@inclusiv-ds/tokens": "workspace:*",
     "@inclusiv-ds/typography": "workspace:*"

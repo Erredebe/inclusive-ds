@@ -180,6 +180,39 @@
       </section>
 
       <section class="card">
+        <h2>iv-alert + iv-toast</h2>
+        <div class="col" style="max-width: 560px">
+          <iv-alert
+            appearance="warning"
+            title="Mantenimiento programado"
+            description="El servicio estara en modo lectura de 02:00 a 02:30 UTC."
+            closable
+          ></iv-alert>
+
+          <iv-alert appearance="success" title="Perfil actualizado" closable>
+            Tus cambios se sincronizaron en todos los dispositivos.
+          </iv-alert>
+
+          <div class="row" style="justify-content: flex-start">
+            <iv-button id="show-toast-success" version="v2" appearance="solid"
+              >Mostrar toast success</iv-button
+            >
+            <iv-button id="show-toast-error" version="v2" appearance="danger"
+              >Mostrar toast error</iv-button
+            >
+          </div>
+
+          <iv-toast
+            id="demo-toast"
+            title="Cambios guardados"
+            message="La configuracion se actualizo correctamente."
+            appearance="success"
+            duration="2800"
+          ></iv-toast>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>iv-badge + iv-spinner</h2>
         <div class="row">
           <iv-badge>Default</iv-badge>
@@ -304,6 +337,7 @@
       const modal = document.getElementById('demo-dialog-modal');
       const drawer = document.getElementById('demo-dialog-drawer');
       const alertDialog = document.getElementById('demo-dialog-alert');
+      const toast = document.getElementById('demo-toast');
 
       document
         .getElementById('open-dialog-modal')
@@ -331,6 +365,20 @@
       document
         .getElementById('confirm-dialog-alert')
         ?.addEventListener('click', () => alertDialog?.close?.('confirm'));
+
+      document.getElementById('show-toast-success')?.addEventListener('click', () => {
+        toast?.setAttribute('appearance', 'success');
+        toast?.setAttribute('title', 'Cambios guardados');
+        toast?.setAttribute('message', 'La configuracion se actualizo correctamente.');
+        toast?.show?.();
+      });
+
+      document.getElementById('show-toast-error')?.addEventListener('click', () => {
+        toast?.setAttribute('appearance', 'error');
+        toast?.setAttribute('title', 'No se pudo guardar');
+        toast?.setAttribute('message', 'Revisa tu conexion e intenta nuevamente.');
+        toast?.show?.();
+      });
 
       const callbackSimpleButton = document.getElementById('callback-simple-button');
       const callbackSimpleOutput = document.getElementById('callback-simple-output');

@@ -6,10 +6,14 @@ import { defineCustomElement as defineIvDialog } from '@inclusiv-ds/dialog/compo
 import { defineCustomElement as defineIvContainer } from '@inclusiv-ds/container/components/iv-container';
 import { defineCustomElement as defineIvFormField } from '@inclusiv-ds/form-field/components/iv-form-field';
 import { defineCustomElement as defineIvInput } from '@inclusiv-ds/input/components/iv-input';
+import { defineCustomElement as defineIvSelect } from '@inclusiv-ds/select/components/iv-select';
+import { defineCustomElement as defineIvTextarea } from '@inclusiv-ds/textarea/components/iv-textarea';
+import { defineCustomElement as defineIvAlert } from '@inclusiv-ds/alert/components/iv-alert';
 import { defineCustomElement as defineIvRadio } from '@inclusiv-ds/radio/components/iv-radio';
 import { defineCustomElement as defineIvRadioGroup } from '@inclusiv-ds/radio/components/iv-radio-group';
 import { defineCustomElement as defineIvSpinner } from '@inclusiv-ds/spinner/components/iv-spinner';
 import { defineCustomElement as defineIvToggle } from '@inclusiv-ds/toggle/components/iv-toggle';
+import { defineCustomElement as defineIvToast } from '@inclusiv-ds/toast/components/iv-toast';
 import { defineCustomElement as defineIvHeading } from '@inclusiv-ds/typography/components/iv-heading';
 import { defineCustomElement as defineIvLabel } from '@inclusiv-ds/typography/components/iv-label';
 import { defineCustomElement as defineIvText } from '@inclusiv-ds/typography/components/iv-text';
@@ -20,13 +24,17 @@ type DsComponent =
   | 'iv-text'
   | 'iv-button'
   | 'iv-input'
+  | 'iv-textarea'
+  | 'iv-select'
+  | 'iv-alert'
   | 'iv-badge'
   | 'iv-spinner'
   | 'iv-checkbox'
   | 'iv-radio-group'
   | 'iv-toggle'
   | 'iv-form-field'
-  | 'iv-dialog';
+  | 'iv-dialog'
+  | 'iv-toast';
 
 type PropValue = string | number | boolean;
 type FieldType = 'text' | 'textarea' | 'select' | 'boolean' | 'number';
@@ -109,6 +117,9 @@ const STORAGE_KEY_V1 = 'ids-editor-layout-v1';
 
 if (!customElements.get('iv-button')) defineIvButton();
 if (!customElements.get('iv-input')) defineIvInput();
+if (!customElements.get('iv-select')) defineIvSelect();
+if (!customElements.get('iv-textarea')) defineIvTextarea();
+if (!customElements.get('iv-alert')) defineIvAlert();
 if (!customElements.get('iv-badge')) defineIvBadge();
 if (!customElements.get('iv-spinner')) defineIvSpinner();
 if (!customElements.get('iv-text')) defineIvText();
@@ -120,6 +131,7 @@ if (!customElements.get('iv-radio-group')) defineIvRadioGroup();
 if (!customElements.get('iv-toggle')) defineIvToggle();
 if (!customElements.get('iv-form-field')) defineIvFormField();
 if (!customElements.get('iv-dialog')) defineIvDialog();
+if (!customElements.get('iv-toast')) defineIvToast();
 if (!customElements.get('iv-container')) defineIvContainer();
 
 const palette = document.getElementById('palette');
@@ -282,6 +294,128 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     createElement: (item) => {
       const el = document.createElement('iv-input');
       applyProps(el, item.props);
+      return el;
+    },
+  },
+  'iv-textarea': {
+    title: 'Textarea',
+    defaultProps: {
+      version: 'v2',
+      placeholder: 'Escribe una descripcion',
+      label: 'Descripcion',
+      helperText: '',
+      state: 'default',
+      rows: 4,
+    },
+    defaultContent: {},
+    availableSlots: [],
+    propFields: [
+      { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
+      { key: 'label', label: 'Label', type: 'text' },
+      { key: 'placeholder', label: 'Placeholder', type: 'text' },
+      { key: 'helperText', label: 'Helper text', type: 'text' },
+      { key: 'state', label: 'State', type: 'select', options: ['default', 'error', 'success'] },
+      { key: 'rows', label: 'Rows', type: 'number', min: 2, max: 12, step: 1 },
+      { key: 'maxLength', label: 'Max length', type: 'number', min: 0, max: 500, step: 1 },
+      { key: 'clearable', label: 'Clearable', type: 'boolean' },
+      { key: 'required', label: 'Required', type: 'boolean' },
+      { key: 'readonly', label: 'Readonly', type: 'boolean' },
+      { key: 'disabled', label: 'Disabled', type: 'boolean' },
+    ],
+    contentFields: [],
+    createElement: (item) => {
+      const el = document.createElement('iv-textarea');
+      applyProps(el, item.props);
+      return el;
+    },
+  },
+  'iv-select': {
+    title: 'Select',
+    defaultProps: {
+      version: 'v2',
+      label: 'Pais',
+      helperText: '',
+      state: 'default',
+      value: '',
+    },
+    defaultContent: {},
+    availableSlots: [ROOT_SLOT],
+    fallbackContentBySlot: {
+      [ROOT_SLOT]: ['optionA', 'optionB', 'optionC'],
+    },
+    propFields: [
+      { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
+      { key: 'label', label: 'Label', type: 'text' },
+      { key: 'helperText', label: 'Helper text', type: 'text' },
+      { key: 'state', label: 'State', type: 'select', options: ['default', 'error', 'success'] },
+      { key: 'value', label: 'Value', type: 'text' },
+      { key: 'required', label: 'Required', type: 'boolean' },
+      { key: 'disabled', label: 'Disabled', type: 'boolean' },
+      { key: 'invalid', label: 'Invalid', type: 'boolean' },
+    ],
+    contentFields: [
+      { key: 'optionA', label: 'Opcion A' },
+      { key: 'optionB', label: 'Opcion B' },
+      { key: 'optionC', label: 'Opcion C' },
+    ],
+    createElement: (item) => {
+      const el = document.createElement('iv-select');
+      applyProps(el, item.props);
+
+      if (!hasSlotNodes(item, ROOT_SLOT)) {
+        const optionA = document.createElement('option');
+        optionA.setAttribute('value', 'a');
+        optionA.textContent = item.content.optionA || 'Opcion A';
+
+        const optionB = document.createElement('option');
+        optionB.setAttribute('value', 'b');
+        optionB.textContent = item.content.optionB || 'Opcion B';
+
+        const optionC = document.createElement('option');
+        optionC.setAttribute('value', 'c');
+        optionC.textContent = item.content.optionC || 'Opcion C';
+
+        el.append(optionA, optionB, optionC);
+      }
+
+      return el;
+    },
+  },
+  'iv-alert': {
+    title: 'Alert',
+    defaultProps: {
+      appearance: 'info',
+      title: 'Mensaje importante',
+      description: 'Detalle contextual para la persona usuaria.',
+      closable: true,
+      open: true,
+    },
+    defaultContent: {},
+    availableSlots: [ROOT_SLOT],
+    fallbackContentBySlot: {
+      [ROOT_SLOT]: ['description'],
+    },
+    propFields: [
+      {
+        key: 'appearance',
+        label: 'Appearance',
+        type: 'select',
+        options: ['info', 'success', 'warning', 'error'],
+      },
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'description', label: 'Description', type: 'textarea' },
+      { key: 'closable', label: 'Closable', type: 'boolean' },
+      { key: 'open', label: 'Open', type: 'boolean' },
+    ],
+    contentFields: [{ key: 'description', label: 'Contenido', multiline: true }],
+    createElement: (item) => {
+      const el = document.createElement('iv-alert');
+      applyProps(el, item.props);
+
+      if (!hasSlotNodes(item, ROOT_SLOT) && item.content.description) {
+        el.textContent = item.content.description;
+      }
+
       return el;
     },
   },
@@ -503,6 +637,46 @@ const schemas: Record<DsComponent, ComponentSchema> = {
         dialog.appendChild(content);
       }
       return dialog;
+    },
+  },
+  'iv-toast': {
+    title: 'Toast',
+    defaultProps: {
+      appearance: 'success',
+      title: 'Guardado',
+      message: 'Los cambios fueron aplicados.',
+      open: true,
+      closable: true,
+      duration: 4000,
+    },
+    defaultContent: {},
+    availableSlots: [ROOT_SLOT],
+    fallbackContentBySlot: {
+      [ROOT_SLOT]: ['message'],
+    },
+    propFields: [
+      {
+        key: 'appearance',
+        label: 'Appearance',
+        type: 'select',
+        options: ['info', 'success', 'warning', 'error'],
+      },
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'message', label: 'Message', type: 'textarea' },
+      { key: 'open', label: 'Open', type: 'boolean' },
+      { key: 'closable', label: 'Closable', type: 'boolean' },
+      { key: 'duration', label: 'Duration ms', type: 'number', min: 0, max: 30000, step: 100 },
+    ],
+    contentFields: [{ key: 'message', label: 'Contenido', multiline: true }],
+    createElement: (item) => {
+      const el = document.createElement('iv-toast');
+      applyProps(el, item.props);
+
+      if (!hasSlotNodes(item, ROOT_SLOT) && item.content.message) {
+        el.textContent = item.content.message;
+      }
+
+      return el;
     },
   },
 };
@@ -1801,6 +1975,9 @@ function isDsComponent(value: unknown): value is DsComponent {
       'iv-text',
       'iv-button',
       'iv-input',
+      'iv-textarea',
+      'iv-select',
+      'iv-alert',
       'iv-badge',
       'iv-spinner',
       'iv-checkbox',
@@ -1808,6 +1985,7 @@ function isDsComponent(value: unknown): value is DsComponent {
       'iv-toggle',
       'iv-form-field',
       'iv-dialog',
+      'iv-toast',
     ].includes(value)
   );
 }

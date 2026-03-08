@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iv-alert playground</title>
+    <script type="module" src="/build/ivalert.esm.js"></script>
+    <script nomodule src="/build/ivalert.js"></script>
+  </head>
+  <body style="font-family: sans-serif; padding: 24px; display: grid; gap: 12px; max-width: 560px">
+    <h1>iv-alert</h1>
+
+    <iv-alert
+      appearance="info"
+      title="Informacion"
+      description="Tu sesion sigue activa."
+    ></iv-alert>
+    <iv-alert appearance="success" title="Guardado" description="Cambios aplicados."></iv-alert>
+    <iv-alert
+      appearance="warning"
+      title="Atencion"
+      description="Revisa los datos."
+      closable
+    ></iv-alert>
+    <iv-alert
+      appearance="error"
+      title="Error"
+      description="No se pudo completar."
+      closable
+    ></iv-alert>
+  </body>
+</html>

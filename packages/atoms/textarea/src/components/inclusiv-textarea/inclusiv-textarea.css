@@ -1,0 +1,92 @@
+.textarea {
+  border: 1px solid var(--ids-color-border, #cde7e3);
+  border-radius: var(--ids-radius-md, 0.5rem);
+  padding: var(--ids-space-sm, 0.5rem) var(--ids-space-md, 1rem);
+  font: inherit;
+  color: var(--ids-color-text, #0b1f1d);
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--ids-color-primary, #0f766e);
+  outline-offset: 1px;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  color: #0b1f1d;
+}
+
+.field__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.field__control {
+  border: 1px solid #cde7e3;
+  border-radius: 0.7rem;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem;
+}
+
+.field__textarea {
+  border: 0;
+  min-height: 7rem;
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+  resize: vertical;
+  padding: 0.2rem;
+}
+
+.field__textarea:focus {
+  outline: none;
+}
+
+.field__control:focus-within {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+}
+
+.field--error .field__control {
+  border-color: #e11d48;
+}
+
+.field--error .field__helper {
+  color: #be123c;
+}
+
+.field--success .field__control {
+  border-color: #16a34a;
+}
+
+.field--success .field__helper {
+  color: #15803d;
+}
+
+.field__helper {
+  font-size: 0.75rem;
+}
+
+.field__counter {
+  color: var(--ids-color-muted, #6b7280);
+  font-size: 0.75rem;
+  justify-self: end;
+}
+
+.field__clear {
+  justify-self: end;
+  border: 1px solid #cde7e3;
+  background: #fff;
+  border-radius: 999px;
+  color: var(--ids-color-muted, #6b7280);
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.2rem 0.55rem;
+}

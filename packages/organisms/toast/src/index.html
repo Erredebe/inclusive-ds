@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iv-toast playground</title>
+    <script type="module" src="/build/ivtoast.esm.js"></script>
+    <script nomodule src="/build/ivtoast.js"></script>
+  </head>
+  <body style="font-family: sans-serif; padding: 24px; display: grid; gap: 12px; max-width: 560px">
+    <h1>iv-toast</h1>
+
+    <button id="show">Mostrar toast</button>
+    <iv-toast
+      id="demo-toast"
+      title="Guardado"
+      message="Los cambios fueron aplicados."
+      appearance="success"
+    ></iv-toast>
+
+    <script>
+      document.getElementById('show')?.addEventListener('click', () => {
+        document.getElementById('demo-toast')?.show?.();
+      });
+    </script>
+  </body>
+</html>

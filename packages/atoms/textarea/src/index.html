@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iv-textarea playground</title>
+    <script type="module" src="/build/ivtextarea.esm.js"></script>
+    <script nomodule src="/build/ivtextarea.js"></script>
+  </head>
+  <body style="font-family: sans-serif; padding: 24px; display: grid; gap: 12px; max-width: 560px">
+    <h1>iv-textarea</h1>
+
+    <iv-textarea placeholder="V1 textarea"></iv-textarea>
+
+    <iv-textarea
+      version="v2"
+      label="Descripcion"
+      placeholder="Escribe una descripcion"
+      helper-text="Minimo 20 caracteres"
+      rows="4"
+    ></iv-textarea>
+
+    <iv-textarea
+      version="v2"
+      state="error"
+      label="Descripcion"
+      placeholder="Escribe una descripcion"
+      helper-text="Este campo es obligatorio"
+      rows="4"
+    ></iv-textarea>
+  </body>
+</html>

@@ -1,6 +1,9 @@
 import '@inclusiv-ds/tokens/src/tokens.css';
 import { defineCustomElement as defineIvButton } from '@inclusiv-ds/button/components/iv-button';
 import { defineCustomElement as defineIvInput } from '@inclusiv-ds/input/components/iv-input';
+import { defineCustomElement as defineIvSelect } from '@inclusiv-ds/select/components/iv-select';
+import { defineCustomElement as defineIvTextarea } from '@inclusiv-ds/textarea/components/iv-textarea';
+import { defineCustomElement as defineIvAlert } from '@inclusiv-ds/alert/components/iv-alert';
 import { defineCustomElement as defineIvBadge } from '@inclusiv-ds/badge/components/iv-badge';
 import { defineCustomElement as defineIvSpinner } from '@inclusiv-ds/spinner/components/iv-spinner';
 import { defineCustomElement as defineIvText } from '@inclusiv-ds/typography/components/iv-text';
@@ -12,6 +15,7 @@ import { defineCustomElement as defineIvRadioGroup } from '@inclusiv-ds/radio/co
 import { defineCustomElement as defineIvToggle } from '@inclusiv-ds/toggle/components/iv-toggle';
 import { defineCustomElement as defineIvFormField } from '@inclusiv-ds/form-field/components/iv-form-field';
 import { defineCustomElement as defineIvDialog } from '@inclusiv-ds/dialog/components/iv-dialog';
+import { defineCustomElement as defineIvToast } from '@inclusiv-ds/toast/components/iv-toast';
 import { defineCustomElement as defineIvContainer } from '@inclusiv-ds/container/components/iv-container';
 
 if (!customElements.get('iv-button')) {
@@ -20,6 +24,18 @@ if (!customElements.get('iv-button')) {
 
 if (!customElements.get('iv-input')) {
   defineIvInput();
+}
+
+if (!customElements.get('iv-textarea')) {
+  defineIvTextarea();
+}
+
+if (!customElements.get('iv-select')) {
+  defineIvSelect();
+}
+
+if (!customElements.get('iv-alert')) {
+  defineIvAlert();
 }
 
 if (!customElements.get('iv-badge')) {
@@ -64,6 +80,10 @@ if (!customElements.get('iv-form-field')) {
 
 if (!customElements.get('iv-dialog')) {
   defineIvDialog();
+}
+
+if (!customElements.get('iv-toast')) {
+  defineIvToast();
 }
 
 if (!customElements.get('iv-container')) {

@@ -45,16 +45,16 @@ Notas:
 
 ## Tabla de mapeo (estado actual -> objetivo)
 
-| Componente            | Estado actual                                                                   | Objetivo contrato                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `iv-input`            | `state`, `helperText`, sin `value/name/required/readonly`, sin eventos de valor | `invalid`, `helperText`, `errorText`, `value`, `name`, `required`, `readonly`, eventos `ivInput` + `ivChange` |
-| `iv-form-field`       | `label`, `helperText`, `errorText`, `required`, `disabled`                      | mantener wrapper semantico y propagar asociaciones a control sloteado                                         |
-| `iv-checkbox`         | `checked`, evento `checkedChange<boolean>`                                      | `value:boolean`, `ivChange` (`{ value: boolean }`)                                                            |
-| `iv-radio`            | `checked`, `value`, `name`, evento `radioChange<string>`                        | `value`, `name`, `ivChange` (`{ value: string }`)                                                             |
-| `iv-radio-group`      | `name`, `label`, sin evento propio                                              | `name`, `label`, opcional `value`, `ivChange` consolidado                                                     |
-| `iv-toggle`           | `checked`, evento `toggleChange<boolean>`                                       | `value:boolean`, `ivChange` (`{ value: boolean }`)                                                            |
-| `iv-textarea` (nuevo) | no existe                                                                       | crear con contrato completo de texto (`ivInput` + `ivChange`)                                                 |
-| `iv-select` (nuevo)   | no existe                                                                       | crear con `value`, `name`, `disabled`, `required`, `invalid`, evento `ivChange`                               |
+| Componente       | Estado actual                                                                         | Objetivo contrato                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `iv-input`       | `state`, `helperText`, sin `value/name/required/readonly`, sin eventos de valor       | `invalid`, `helperText`, `errorText`, `value`, `name`, `required`, `readonly`, eventos `ivInput` + `ivChange` |
+| `iv-form-field`  | `label`, `helperText`, `errorText`, `required`, `disabled`                            | mantener wrapper semantico y propagar asociaciones a control sloteado                                         |
+| `iv-checkbox`    | `checked`, evento `checkedChange<boolean>`                                            | `value:boolean`, `ivChange` (`{ value: boolean }`)                                                            |
+| `iv-radio`       | `checked`, `value`, `name`, evento `radioChange<string>`                              | `value`, `name`, `ivChange` (`{ value: string }`)                                                             |
+| `iv-radio-group` | `name`, `label`, sin evento propio                                                    | `name`, `label`, opcional `value`, `ivChange` consolidado                                                     |
+| `iv-toggle`      | `checked`, evento `toggleChange<boolean>`                                             | `value:boolean`, `ivChange` (`{ value: boolean }`)                                                            |
+| `iv-textarea`    | `value`, `name`, `readonly`, `required`, `disabled`, `invalid`, `ivInput`, `ivChange` | mantener contrato de texto largo y consistencia con `iv-input`                                                |
+| `iv-select`      | `value`, `name`, `disabled`, `required`, `invalid`, `ivChange`                        | evolucionar hacia soporte de validacion ampliada manteniendo contrato base                                    |
 
 ## Regla de compatibilidad
 
