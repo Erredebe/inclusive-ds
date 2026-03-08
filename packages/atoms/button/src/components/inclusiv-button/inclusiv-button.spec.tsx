@@ -59,4 +59,36 @@ describe('iv-button', () => {
     const button = page.root?.shadowRoot?.querySelector('button');
     expect(button?.getAttribute('aria-label')).toBe('Cerrar');
   });
+
+  it('emits ivClick on button press', async () => {
+    const page = await newSpecPage({
+      components: [InclusivButton],
+      html: '<iv-button version="v2">Continuar</iv-button>',
+    });
+
+    const spy = jest.fn();
+    page.root?.addEventListener('ivClick', spy);
+
+    const button = page.root?.shadowRoot?.querySelector('button') as HTMLButtonElement;
+    button.click();
+    await page.waitForChanges();
+
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ detail: { version: 'v2' } }));
+  });
+
+  it('does not emit ivClick when disabled by loading', async () => {
+    const page = await newSpecPage({
+      components: [InclusivButton],
+      html: '<iv-button version="v2" loading>Guardando</iv-button>',
+    });
+
+    const spy = jest.fn();
+    page.root?.addEventListener('ivClick', spy);
+
+    const button = page.root?.shadowRoot?.querySelector('button') as HTMLButtonElement;
+    button.click();
+    await page.waitForChanges();
+
+    expect(spy).not.toHaveBeenCalled();
+  });
 });

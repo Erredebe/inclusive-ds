@@ -43,6 +43,57 @@
       </section>
 
       <section class="card">
+        <h2>Callbacks (simple + complejo)</h2>
+
+        <div class="col" style="max-width: 680px">
+          <iv-heading level="h4">Simple: contador con ivClick</iv-heading>
+          <div class="row">
+            <iv-button id="callback-simple-button" version="v2">Sumar click</iv-button>
+            <iv-text id="callback-simple-output" variant="body">Clicks: 0</iv-text>
+          </div>
+
+          <iv-heading level="h4">Complejo: formulario con validacion + async</iv-heading>
+
+          <iv-input
+            id="callback-email"
+            version="v2"
+            label="Correo"
+            placeholder="tu@email.com"
+            helper-text="Obligatorio"
+          ></iv-input>
+
+          <iv-select id="callback-country" version="v2" label="Pais" helper-text="Elige una opcion">
+            <option value="">Selecciona un pais</option>
+            <option value="ar">Argentina</option>
+            <option value="cl">Chile</option>
+            <option value="uy">Uruguay</option>
+          </iv-select>
+
+          <iv-textarea
+            id="callback-notes"
+            version="v2"
+            label="Notas"
+            rows="3"
+            placeholder="Agrega contexto de la solicitud"
+          ></iv-textarea>
+
+          <div class="row">
+            <iv-checkbox id="callback-terms" label="Acepto terminos"></iv-checkbox>
+            <iv-toggle id="callback-notify" label="Quiero notificaciones"></iv-toggle>
+          </div>
+
+          <div class="row">
+            <iv-button id="callback-submit" version="v2">Enviar solicitud</iv-button>
+            <iv-button id="callback-reset" version="v2" appearance="outline">Reset</iv-button>
+          </div>
+
+          <iv-text id="callback-complex-output" variant="body" color="muted">
+            Estado: listo para enviar
+          </iv-text>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>iv-input</h2>
         <div class="col">
           <iv-input placeholder="V1 input"></iv-input>
@@ -71,6 +122,60 @@
             max-length="20"
             helper-text="Maximo 20 caracteres"
           ></iv-input>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>iv-textarea</h2>
+        <div class="col" style="max-width: 560px">
+          <iv-textarea placeholder="V1 textarea"></iv-textarea>
+          <iv-textarea
+            version="v2"
+            label="Descripcion del caso"
+            placeholder="Cuenta el contexto de tu solicitud"
+            helper-text="Incluye pasos y resultado esperado"
+            rows="4"
+          ></iv-textarea>
+          <iv-textarea
+            version="v2"
+            label="Resumen"
+            value="Necesitamos priorizar los hallazgos de accesibilidad."
+            clearable
+            max-length="140"
+            helper-text="Maximo 140 caracteres"
+            rows="4"
+          ></iv-textarea>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>iv-select</h2>
+        <div class="col" style="max-width: 420px">
+          <iv-select>
+            <option value="">Selecciona un pais</option>
+            <option value="ar">Argentina</option>
+            <option value="cl">Chile</option>
+            <option value="uy">Uruguay</option>
+          </iv-select>
+
+          <iv-select version="v2" label="Pais" helper-text="Selecciona una opcion" value="ar">
+            <option value="">Selecciona un pais</option>
+            <option value="ar">Argentina</option>
+            <option value="cl">Chile</option>
+            <option value="uy">Uruguay</option>
+          </iv-select>
+
+          <iv-select
+            version="v2"
+            label="Pais"
+            state="error"
+            helper-text="Debes seleccionar una opcion"
+          >
+            <option value="">Selecciona un pais</option>
+            <option value="ar">Argentina</option>
+            <option value="cl">Chile</option>
+            <option value="uy">Uruguay</option>
+          </iv-select>
         </div>
       </section>
 
@@ -116,11 +221,15 @@
           <iv-toggle label="Recibir notificaciones"></iv-toggle>
 
           <iv-form-field
-            label="Correo"
-            helper-text="Usaremos este correo para contactarte"
+            label="Detalle del caso"
+            helper-text="Este texto se comparte con el equipo de soporte"
             required
           >
-            <iv-input version="v2" placeholder="tu@email.com"></iv-input>
+            <iv-textarea
+              version="v2"
+              rows="4"
+              placeholder="Describe el problema con el mayor detalle posible"
+            ></iv-textarea>
           </iv-form-field>
         </div>
       </section>
@@ -222,6 +331,103 @@
       document
         .getElementById('confirm-dialog-alert')
         ?.addEventListener('click', () => alertDialog?.close?.('confirm'));
+
+      const callbackSimpleButton = document.getElementById('callback-simple-button');
+      const callbackSimpleOutput = document.getElementById('callback-simple-output');
+
+      let callbackSimpleClicks = 0;
+
+      callbackSimpleButton?.addEventListener('ivClick', () => {
+        callbackSimpleClicks += 1;
+        if (callbackSimpleOutput) {
+          callbackSimpleOutput.textContent = `Clicks: ${callbackSimpleClicks}`;
+        }
+      });
+
+      const callbackEmail = document.getElementById('callback-email');
+      const callbackCountry = document.getElementById('callback-country');
+      const callbackNotes = document.getElementById('callback-notes');
+      const callbackTerms = document.getElementById('callback-terms');
+      const callbackNotify = document.getElementById('callback-notify');
+      const callbackSubmit = document.getElementById('callback-submit');
+      const callbackReset = document.getElementById('callback-reset');
+      const callbackComplexOutput = document.getElementById('callback-complex-output');
+
+      const callbackState = {
+        email: '',
+        country: '',
+        notes: '',
+        accepted: false,
+        notify: false,
+      };
+
+      callbackEmail?.addEventListener('ivInput', (event) => {
+        callbackState.email = event.detail.value || '';
+      });
+
+      callbackCountry?.addEventListener('ivChange', (event) => {
+        callbackState.country = event.detail.value || '';
+      });
+
+      callbackNotes?.addEventListener('ivInput', (event) => {
+        callbackState.notes = event.detail.value || '';
+      });
+
+      callbackTerms?.addEventListener('ivChange', (event) => {
+        callbackState.accepted = Boolean(event.detail.value);
+      });
+
+      callbackNotify?.addEventListener('ivChange', (event) => {
+        callbackState.notify = Boolean(event.detail.value);
+      });
+
+      callbackSubmit?.addEventListener('ivClick', () => {
+        const emailOk = callbackState.email.includes('@');
+        const countryOk = callbackState.country.length > 0;
+
+        if (!emailOk || !countryOk || !callbackState.accepted) {
+          if (callbackComplexOutput) {
+            callbackComplexOutput.textContent =
+              'Estado: faltan datos validos (correo, pais y terminos).';
+          }
+          return;
+        }
+
+        callbackSubmit.setAttribute('loading', '');
+        if (callbackComplexOutput) {
+          callbackComplexOutput.textContent = 'Estado: enviando solicitud...';
+        }
+
+        window.setTimeout(() => {
+          callbackSubmit.removeAttribute('loading');
+          if (callbackComplexOutput) {
+            const notesInfo = callbackState.notes ? 'con notas' : 'sin notas';
+            const notifyInfo = callbackState.notify
+              ? 'notificaciones activas'
+              : 'sin notificaciones';
+            callbackComplexOutput.textContent = `Estado: enviado (${callbackState.country}, ${notesInfo}, ${notifyInfo}).`;
+          }
+        }, 1100);
+      });
+
+      callbackReset?.addEventListener('ivClick', () => {
+        callbackState.email = '';
+        callbackState.country = '';
+        callbackState.notes = '';
+        callbackState.accepted = false;
+        callbackState.notify = false;
+
+        callbackEmail?.setAttribute('value', '');
+        callbackCountry?.setAttribute('value', '');
+        callbackNotes?.setAttribute('value', '');
+        callbackTerms?.removeAttribute('checked');
+        callbackNotify?.removeAttribute('checked');
+        callbackSubmit?.removeAttribute('loading');
+
+        if (callbackComplexOutput) {
+          callbackComplexOutput.textContent = 'Estado: listo para enviar';
+        }
+      });
     </script>
   </body>
 </html>

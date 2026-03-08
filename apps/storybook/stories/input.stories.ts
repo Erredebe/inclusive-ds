@@ -43,3 +43,28 @@ export const V2ClearableCounter: Story = {
   render: () =>
     '<iv-input version="v2" label="Usuario" value="inclusiv" clearable max-length="20" helper-text="Maximo 20 caracteres"></iv-input>',
 };
+
+export const CallbackSimple: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.display = 'grid';
+    wrap.style.gap = '10px';
+    wrap.style.minWidth = '320px';
+
+    const input = document.createElement('iv-input');
+    input.setAttribute('version', 'v2');
+    input.setAttribute('label', 'Nombre');
+    input.setAttribute('placeholder', 'Escribe tu nombre');
+
+    const output = document.createElement('iv-text');
+    output.textContent = 'Ultimo valor: -';
+
+    input.addEventListener('ivInput', (event) => {
+      const detail = (event as CustomEvent<{ value: string }>).detail;
+      output.textContent = `Ultimo valor: ${detail.value || '-'}`;
+    });
+
+    wrap.append(input, output);
+    return wrap;
+  },
+};

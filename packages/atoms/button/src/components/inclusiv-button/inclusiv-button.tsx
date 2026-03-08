@@ -1,4 +1,4 @@
-import { Component, h, Prop } from '@stencil/core';
+import { Component, Event, EventEmitter, h, Prop } from '@stencil/core';
 
 @Component({
   tag: 'iv-button',
@@ -16,6 +16,16 @@ export class InclusivButton {
   @Prop() iconOnly = false;
   @Prop() ariaLabel = '';
 
+  @Event() ivClick!: EventEmitter<{ version: 'v1' | 'v2' }>;
+
+  private onClick = () => {
+    if (this.disabled || this.loading) {
+      return;
+    }
+
+    this.ivClick.emit({ version: this.version });
+  };
+
   render() {
     const isDisabled = this.disabled || this.loading;
 
@@ -32,6 +42,7 @@ export class InclusivButton {
             'button-v2--loading': this.loading,
           }}
           disabled={isDisabled}
+          onClick={this.onClick}
           aria-label={this.iconOnly ? this.ariaLabel || 'Action' : undefined}
           aria-busy={this.loading ? 'true' : undefined}
         >
@@ -42,7 +53,11 @@ export class InclusivButton {
     }
 
     return (
-      <button class={`button button-v1 button-v1--${this.variant}`} disabled={isDisabled}>
+      <button
+        class={`button button-v1 button-v1--${this.variant}`}
+        disabled={isDisabled}
+        onClick={this.onClick}
+      >
         <slot />
       </button>
     );
