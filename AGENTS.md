@@ -15,6 +15,8 @@
 - No introducir refactors ajenos a la tarea.
 - Si cambia API/UI, actualizar tests + stories + docs en el mismo cambio.
 - Si se agrega un componente nuevo, incluir siempre demo en Storybook y demo en `apps/stencil-playground/index.html` en el mismo PR.
+- Si se agrega un componente nuevo, integrarlo tambien en el editor (`apps/stencil-playground/editor.html` y/o `apps/stencil-playground/src/editor.ts`) y contemplar su caso de uso especifico en la demo/documentacion.
+- Consultar y mantener la memoria de errores en `docs/ERRORS-KB.md` (workflow en `.opencode/skills/error-kb/SKILL.md`).
 - No commitear artefactos generados (`packages/*/.stencil`, `packages/*/www`, `storybook-static`).
 
 ## Flujo recomendado

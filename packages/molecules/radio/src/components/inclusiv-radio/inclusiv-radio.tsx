@@ -14,11 +14,13 @@ export class InclusivRadio {
   @Prop() label = '';
 
   @Event() radioChange!: EventEmitter<string>;
+  @Event() ivChange!: EventEmitter<{ value: string }>;
 
   private handleChange = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
     if (target.checked) {
       this.radioChange.emit(this.value);
+      this.ivChange.emit({ value: this.value });
     }
   };
 

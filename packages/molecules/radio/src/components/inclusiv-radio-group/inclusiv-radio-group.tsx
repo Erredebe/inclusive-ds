@@ -1,4 +1,4 @@
-import { Component, h, Prop } from '@stencil/core';
+import { Component, Element, h, Prop, Watch } from '@stencil/core';
 
 @Component({
   tag: 'iv-radio-group',
@@ -6,15 +6,36 @@ import { Component, h, Prop } from '@stencil/core';
   shadow: true,
 })
 export class InclusivRadioGroup {
+  @Element() hostEl!: HTMLElement;
+
   @Prop() name = 'radio-group';
   @Prop() label = '';
 
+  @Watch('name')
+  protected handleNameChange() {
+    this.syncChildrenName();
+  }
+
+  componentDidLoad() {
+    this.syncChildrenName();
+  }
+
+  private syncChildrenName() {
+    const radios = this.hostEl.querySelectorAll('iv-radio');
+
+    radios.forEach((radio) => {
+      if (!radio.hasAttribute('name')) {
+        radio.setAttribute('name', this.name);
+      }
+    });
+  }
+
   render() {
     return (
-      <div class="radio-group">
+      <fieldset class="radio-group">
         {this.label && <legend class="radio-group__label">{this.label}</legend>}
-        <slot />
-      </div>
+        <slot onSlotchange={() => this.syncChildrenName()} />
+      </fieldset>
     );
   }
 }

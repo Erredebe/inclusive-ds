@@ -12,10 +12,12 @@ export class InclusivToggle {
   @Prop() label = '';
 
   @Event() toggleChange!: EventEmitter<boolean>;
+  @Event() ivChange!: EventEmitter<{ value: boolean }>;
 
   private handleChange = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
     this.toggleChange.emit(target.checked);
+    this.ivChange.emit({ value: target.checked });
   };
 
   render() {

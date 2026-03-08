@@ -8,6 +8,11 @@ Design system de componentes web accesibles y reutilizables, construido con Sten
 - **Storybook**: [https://inclusiv-ds.netlify.app/storybook](https://inclusiv-ds.netlify.app/storybook)
 - **Repositorio**: [https://github.com/Erredebe/inclusive-ds](https://github.com/Erredebe/inclusive-ds)
 
+## Memoria de errores (KB)
+
+- Base de conocimiento: `docs/ERRORS-KB.md`
+- Skill operativa para agentes: `.opencode/skills/error-kb/SKILL.md`
+
 ---
 
 ## Qué es Inclusiv DS
@@ -209,6 +214,8 @@ Los paths públicos soportados para CDN son:
 - **@inclusiv-ds/tokens**: `https://cdn.jsdelivr.net/npm/@inclusiv-ds/tokens@<version>/src/tokens.css`
 
 > Ver documento completo de contrato CDN en `docs/CDN-CONTRACT.md`.
+>
+> Para consistencia de controles de formulario, ver `docs/FORM-API-CONTRACT.md`.
 
 ### Ejemplo: solo button
 

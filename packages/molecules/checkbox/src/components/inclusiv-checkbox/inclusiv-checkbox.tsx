@@ -13,10 +13,12 @@ export class InclusivCheckbox {
   @Prop() label = '';
 
   @Event() checkedChange!: EventEmitter<boolean>;
+  @Event() ivChange!: EventEmitter<{ value: boolean }>;
 
   private handleChange = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
     this.checkedChange.emit(target.checked);
+    this.ivChange.emit({ value: target.checked });
   };
 
   render() {
