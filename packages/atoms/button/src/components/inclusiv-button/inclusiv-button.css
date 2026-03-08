@@ -25,7 +25,10 @@
   border: 1px solid transparent;
   font-weight: 700;
   letter-spacing: 0.01em;
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  transition:
+    transform var(--ids-motion-duration-fast, 120ms) var(--ids-motion-ease-standard, ease),
+    box-shadow var(--ids-motion-duration-fast, 120ms) var(--ids-motion-ease-standard, ease),
+    background-color var(--ids-motion-duration-fast, 120ms) var(--ids-motion-ease-standard, ease);
 }
 
 .button-v2:active {
@@ -34,14 +37,14 @@
 
 .button-v2:disabled,
 .button-v1:disabled {
-  opacity: 0.5;
+  opacity: var(--ids-opacity-disabled, 0.5);
   cursor: not-allowed;
 }
 
 .button-v2--solid {
   background: linear-gradient(180deg, #14b8a6, #0f766e);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.28);
+  box-shadow: var(--ids-shadow-md, 0 8px 20px rgba(4, 17, 16, 0.14));
 }
 
 .button-v2--outline {
@@ -53,7 +56,7 @@
 .button-v2--danger {
   background: linear-gradient(180deg, #f43f5e, #be123c);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(190, 18, 60, 0.28);
+  box-shadow: var(--ids-shadow-md, 0 8px 20px rgba(4, 17, 16, 0.14));
 }
 
 .button-v2--sm {
