@@ -691,7 +691,7 @@ function handleItemAction(action: string, itemId: string, slotName?: string): vo
     if (!source) return;
     const location = findItemLocation(state.items, itemId);
     if (!location) return;
-    const clone = cloneItem(source);
+    const clone = cloneItemForDuplicate(source);
     const nextItems = insertItemAtSlot(state.items, location.parentId, location.slotName, clone);
     setState({ ...state, items: nextItems, selectedItemId: clone.id });
   }
@@ -974,6 +974,7 @@ function renderInspector(): void {
           if (slotNode.kind === 'text') {
             const input = document.createElement('textarea');
             input.className = 'slot-inspector-row__text';
+            input.dataset.fieldId = `slot-text-${slotName}-${slotNode.id}`;
             input.value = slotNode.value;
             input.addEventListener('input', () => {
               updateSelectedItem((item) => {
@@ -1133,7 +1134,7 @@ function updateSelectedItem(mutate: (item: EditorItem) => void): void {
 function updateItemById(itemId: string, mutate: (item: EditorItem) => void): void {
   const nextItems = mapItems(state.items, (item) => {
     if (item.id !== itemId) return item;
-    const draft = cloneItem(item);
+    const draft = cloneItemForUpdate(item);
     mutate(draft);
     return draft;
   });
@@ -1233,6 +1234,11 @@ function renderCanvasItem(item: EditorItem): HTMLElement {
 
           zone.appendChild(renderSlotTextNode(item.id, slotName, child, index, children.length));
         });
+
+        const hint = document.createElement('p');
+        hint.className = 'slot-dropzone__hint';
+        hint.textContent = 'Suelta mas componentes aqui';
+        zone.appendChild(hint);
       }
 
       section.append(header, zone);
@@ -1511,7 +1517,34 @@ function findItemLocation(
   return null;
 }
 
-function cloneItem(item: EditorItem): EditorItem {
+function cloneItemForUpdate(item: EditorItem): EditorItem {
+  const nextSlots = Object.entries(item.slots).reduce<Record<string, SlotNode[]>>(
+    (acc, [slotName, slotNodes]) => {
+      acc[slotName] = slotNodes.map((slotNode) => {
+        if (slotNode.kind === 'text') {
+          return { ...slotNode };
+        }
+
+        return {
+          ...slotNode,
+          item: cloneItemForUpdate(slotNode.item),
+        };
+      });
+      return acc;
+    },
+    {},
+  );
+
+  return {
+    ...item,
+    props: { ...item.props },
+    content: { ...item.content },
+    layout: { ...item.layout },
+    slots: nextSlots,
+  };
+}
+
+function cloneItemForDuplicate(item: EditorItem): EditorItem {
   const nextSlots = Object.entries(item.slots).reduce<Record<string, SlotNode[]>>(
     (acc, [slotName, slotNodes]) => {
       acc[slotName] = slotNodes.map((slotNode) => {
@@ -1522,7 +1555,7 @@ function cloneItem(item: EditorItem): EditorItem {
         return {
           ...slotNode,
           id: generateId(),
-          item: cloneItem(slotNode.item),
+          item: cloneItemForDuplicate(slotNode.item),
         };
       });
       return acc;
