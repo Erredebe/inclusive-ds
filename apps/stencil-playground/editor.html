@@ -197,12 +197,29 @@
         padding-top: 8px;
       }
 
+      .slot-section__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
       .slot-section__title {
-        margin: 0 0 6px;
+        margin: 0;
         font-size: 0.75rem;
         color: #4b5563;
         text-transform: uppercase;
         letter-spacing: 0.04em;
+      }
+
+      .slot-section__btn {
+        border: 1px solid #cde7e3;
+        border-radius: 6px;
+        background: #fff;
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        cursor: pointer;
       }
 
       .slot-dropzone {
@@ -223,6 +240,39 @@
         margin: 0;
         color: #6b7280;
         font-size: 0.8rem;
+      }
+
+      .slot-text-node {
+        border: 1px solid #d9ebe7;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+        display: grid;
+        gap: 6px;
+      }
+
+      .slot-text-node__input {
+        border: 1px solid #cde7e3;
+        border-radius: 6px;
+        padding: 6px;
+        font: inherit;
+        min-height: 54px;
+      }
+
+      .slot-text-node__actions {
+        display: inline-flex;
+        gap: 6px;
+        justify-content: flex-end;
+      }
+
+      .slot-text-node__actions button {
+        border: 1px solid #d9ebe7;
+        border-radius: 6px;
+        background: #fff;
+        color: #355b56;
+        cursor: pointer;
+        padding: 2px 8px;
+        font-size: 0.75rem;
       }
 
       .canvas-item:active {
@@ -341,6 +391,64 @@
         background: #fff;
         padding: 8px 10px;
         cursor: pointer;
+      }
+
+      .slot-inspector-row {
+        border: 1px solid #e2f0ed;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+        display: grid;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .slot-inspector-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .slot-inspector-row__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .slot-inspector-row__header button,
+      .slot-inspector-row__controls button {
+        border: 1px solid #cde7e3;
+        border-radius: 6px;
+        background: #fff;
+        padding: 4px 7px;
+        font-size: 0.74rem;
+        cursor: pointer;
+      }
+
+      .slot-inspector-row__list {
+        display: grid;
+        gap: 6px;
+      }
+
+      .slot-inspector-row__item {
+        border: 1px dashed #dcece8;
+        border-radius: 6px;
+        padding: 6px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .slot-inspector-row__controls {
+        display: inline-flex;
+        justify-content: flex-end;
+        gap: 4px;
+      }
+
+      .slot-inspector-row__text {
+        border: 1px solid #cde7e3;
+        border-radius: 6px;
+        padding: 6px;
+        min-height: 52px;
+        font: inherit;
       }
 
       .editor--preview .panel,

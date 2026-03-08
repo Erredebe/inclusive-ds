@@ -47,6 +47,20 @@ interface ContentField {
   multiline?: boolean;
 }
 
+interface SlotComponentNode {
+  id: string;
+  kind: 'component';
+  item: EditorItem;
+}
+
+interface SlotTextNode {
+  id: string;
+  kind: 'text';
+  value: string;
+}
+
+type SlotNode = SlotComponentNode | SlotTextNode;
+
 interface EditorItem {
   id: string;
   type: DsComponent;
@@ -56,7 +70,7 @@ interface EditorItem {
     colSpan: number;
     rowSpan: number;
   };
-  slots: Record<string, EditorItem[]>;
+  slots: Record<string, SlotNode[]>;
 }
 
 interface EditorState {
@@ -82,6 +96,7 @@ interface ComponentSchema {
   defaultProps: Record<string, PropValue>;
   defaultContent: Record<string, string>;
   availableSlots: string[];
+  fallbackContentBySlot?: Partial<Record<string, string[]>>;
   propFields: PropField[];
   contentFields: ContentField[];
   createElement: (item: EditorItem) => HTMLElement;
@@ -339,6 +354,9 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     defaultProps: { name: 'editor-radio-group', label: 'Selecciona una opcion' },
     defaultContent: { optionA: 'Opcion A', optionB: 'Opcion B' },
     availableSlots: [ROOT_SLOT],
+    fallbackContentBySlot: {
+      [ROOT_SLOT]: ['optionA', 'optionB'],
+    },
     propFields: [
       { key: 'name', label: 'Name', type: 'text' },
       { key: 'label', label: 'Label', type: 'text' },
@@ -351,7 +369,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       const group = document.createElement('iv-radio-group');
       applyProps(group, item.props);
 
-      if ((item.slots[ROOT_SLOT] || []).length === 0) {
+      if (!hasSlotNodes(item, ROOT_SLOT)) {
         const name = String(item.props.name || 'editor-radio-group');
         const radioA = document.createElement('iv-radio');
         radioA.setAttribute('name', name);
@@ -398,6 +416,9 @@ const schemas: Record<DsComponent, ComponentSchema> = {
     },
     defaultContent: { inputPlaceholder: 'tu@email.com' },
     availableSlots: [ROOT_SLOT],
+    fallbackContentBySlot: {
+      [ROOT_SLOT]: ['inputPlaceholder'],
+    },
     propFields: [
       { key: 'version', label: 'Version', type: 'select', options: ['v1', 'v2'] },
       { key: 'label', label: 'Label', type: 'text' },
@@ -411,7 +432,7 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       const field = document.createElement('iv-form-field');
       applyProps(field, item.props);
 
-      if ((item.slots[ROOT_SLOT] || []).length === 0) {
+      if (!hasSlotNodes(item, ROOT_SLOT)) {
         const input = document.createElement('iv-input');
         input.setAttribute('version', 'v2');
         input.setAttribute('placeholder', item.content.inputPlaceholder || 'tu@email.com');
@@ -440,6 +461,10 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       body: 'Contenido de ejemplo dentro de iv-dialog.',
     },
     availableSlots: ['title', ROOT_SLOT, 'actions'],
+    fallbackContentBySlot: {
+      title: ['title'],
+      [ROOT_SLOT]: ['body'],
+    },
     propFields: [
       { key: 'open', label: 'Open', type: 'boolean' },
       { key: 'mode', label: 'Mode', type: 'select', options: ['modal', 'drawer', 'list', 'alert'] },
@@ -465,14 +490,14 @@ const schemas: Record<DsComponent, ComponentSchema> = {
       const dialog = document.createElement('iv-dialog');
       applyProps(dialog, item.props);
 
-      if ((item.slots.title || []).length === 0) {
+      if (!hasSlotNodes(item, 'title')) {
         const title = document.createElement('h3');
         title.setAttribute('slot', 'title');
         title.textContent = item.content.title;
         dialog.appendChild(title);
       }
 
-      if ((item.slots[ROOT_SLOT] || []).length === 0) {
+      if (!hasSlotNodes(item, ROOT_SLOT)) {
         const content = document.createElement('p');
         content.textContent = item.content.body;
         dialog.appendChild(content);
@@ -514,7 +539,7 @@ canvasEl.addEventListener('click', (event) => {
     if (!card) return;
     const itemId = card.dataset.itemId;
     if (!itemId) return;
-    handleItemAction(actionButton.dataset.action || '', itemId);
+    handleItemAction(actionButton.dataset.action || '', itemId, actionButton.dataset.slotName);
     return;
   }
 
@@ -638,7 +663,19 @@ window.addEventListener('keydown', (event) => {
   setPreviewMode(!isPreviewMode);
 });
 
-function handleItemAction(action: string, itemId: string): void {
+function handleItemAction(action: string, itemId: string, slotName?: string): void {
+  if (action === 'add-text') {
+    if (!slotName) return;
+    updateItemById(itemId, (item) => {
+      const slotNodes = item.slots[slotName] || [];
+      item.slots[slotName] = [
+        ...slotNodes,
+        { id: generateId(), kind: 'text', value: 'Texto editable' },
+      ];
+    });
+    return;
+  }
+
   if (action === 'delete') {
     const nextItems = removeItemById(state.items, itemId).items;
     const selectedItemId =
@@ -764,13 +801,28 @@ function renderInspector(): void {
   contentSection.className = 'inspector__section';
   contentSection.innerHTML = '<h3>Contenido</h3>';
 
+  const blockedContentKeys = new Set<string>();
+  Object.entries(schema.fallbackContentBySlot || {}).forEach(([slotName, keys]) => {
+    if (!hasSlotNodes(selected, slotName)) return;
+    (keys || []).forEach((key) => blockedContentKeys.add(key));
+  });
+
+  const visibleContentFields = schema.contentFields.filter(
+    (field) => !blockedContentKeys.has(field.key),
+  );
+
   if (schema.contentFields.length === 0) {
     const empty = document.createElement('p');
     empty.className = 'inspector__empty';
     empty.textContent = 'Este componente no expone contenido textual.';
     contentSection.append(empty);
+  } else if (visibleContentFields.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'inspector__empty';
+    empty.textContent = 'Hay contenido reemplazado por nodos en slots.';
+    contentSection.append(empty);
   } else {
-    schema.contentFields.forEach((field) => {
+    visibleContentFields.forEach((field) => {
       const wrap = document.createElement('div');
       wrap.className = 'field';
 
@@ -822,11 +874,125 @@ function renderInspector(): void {
     slotsSection.append(empty);
   } else {
     schema.availableSlots.forEach((slotName) => {
-      const itemCount = selected.slots[slotName]?.length || 0;
-      const row = document.createElement('p');
-      row.className = 'inspector__empty';
-      row.textContent = `${slotName}: ${itemCount} elemento(s)`;
-      slotsSection.append(row);
+      const row = document.createElement('div');
+      row.className = 'slot-inspector-row';
+
+      const slotNodes = selected.slots[slotName] || [];
+
+      const header = document.createElement('div');
+      header.className = 'slot-inspector-row__header';
+
+      const title = document.createElement('p');
+      title.className = 'inspector__empty';
+      title.textContent = `${slotName}: ${slotNodes.length} nodo(s)`;
+
+      const addTextButton = document.createElement('button');
+      addTextButton.type = 'button';
+      addTextButton.textContent = '+ Texto';
+      addTextButton.addEventListener('click', () => {
+        updateSelectedItem((item) => {
+          item.slots[slotName] = [
+            ...(item.slots[slotName] || []),
+            { id: generateId(), kind: 'text', value: 'Texto editable' },
+          ];
+        });
+      });
+
+      header.append(title, addTextButton);
+      row.appendChild(header);
+
+      if (slotNodes.length > 0) {
+        const list = document.createElement('div');
+        list.className = 'slot-inspector-row__list';
+
+        slotNodes.forEach((slotNode, index) => {
+          const itemRow = document.createElement('div');
+          itemRow.className = 'slot-inspector-row__item';
+
+          const label = document.createElement('p');
+          label.className = 'inspector__empty';
+          if (slotNode.kind === 'text') {
+            label.textContent = `Texto: ${slotNode.value.slice(0, 30) || '(vacio)'}`;
+          } else {
+            label.textContent = `Componente: ${schemas[slotNode.item.type].title}`;
+          }
+
+          const controls = document.createElement('div');
+          controls.className = 'slot-inspector-row__controls';
+
+          const up = document.createElement('button');
+          up.type = 'button';
+          up.textContent = '↑';
+          up.disabled = index === 0;
+          up.addEventListener('click', () => {
+            updateSelectedItem((item) => {
+              const next = [...(item.slots[slotName] || [])];
+              if (index === 0) return;
+              [next[index - 1], next[index]] = [next[index], next[index - 1]];
+              item.slots[slotName] = next;
+            });
+          });
+
+          const down = document.createElement('button');
+          down.type = 'button';
+          down.textContent = '↓';
+          down.disabled = index === slotNodes.length - 1;
+          down.addEventListener('click', () => {
+            updateSelectedItem((item) => {
+              const next = [...(item.slots[slotName] || [])];
+              if (index >= next.length - 1) return;
+              [next[index], next[index + 1]] = [next[index + 1], next[index]];
+              item.slots[slotName] = next;
+            });
+          });
+
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.textContent = 'Eliminar';
+          remove.addEventListener('click', () => {
+            updateSelectedItem((item) => {
+              item.slots[slotName] = (item.slots[slotName] || []).filter(
+                (node) => node.id !== slotNode.id,
+              );
+            });
+          });
+
+          controls.append(up, down);
+          if (slotNode.kind === 'component') {
+            const select = document.createElement('button');
+            select.type = 'button';
+            select.textContent = 'Seleccionar';
+            select.addEventListener('click', () => {
+              setState({ ...state, selectedItemId: slotNode.item.id });
+            });
+            controls.appendChild(select);
+          }
+          controls.appendChild(remove);
+
+          itemRow.append(label, controls);
+
+          if (slotNode.kind === 'text') {
+            const input = document.createElement('textarea');
+            input.className = 'slot-inspector-row__text';
+            input.value = slotNode.value;
+            input.addEventListener('input', () => {
+              updateSelectedItem((item) => {
+                item.slots[slotName] = (item.slots[slotName] || []).map((node) => {
+                  if (node.id !== slotNode.id || node.kind !== 'text') return node;
+                  return { ...node, value: input.value };
+                });
+              });
+            });
+            itemRow.appendChild(input);
+          }
+
+          list.appendChild(itemRow);
+        });
+
+        row.appendChild(list);
+      }
+
+      slotsSection.appendChild(row);
     });
   }
 
@@ -961,8 +1127,12 @@ function createNumberField(
 
 function updateSelectedItem(mutate: (item: EditorItem) => void): void {
   if (!state.selectedItemId) return;
+  updateItemById(state.selectedItemId, mutate);
+}
+
+function updateItemById(itemId: string, mutate: (item: EditorItem) => void): void {
   const nextItems = mapItems(state.items, (item) => {
-    if (item.id !== state.selectedItemId) return item;
+    if (item.id !== itemId) return item;
     const draft = cloneItem(item);
     mutate(draft);
     return draft;
@@ -972,7 +1142,7 @@ function updateSelectedItem(mutate: (item: EditorItem) => void): void {
 
 function createItem(type: DsComponent): EditorItem {
   const schema = schemas[type];
-  const slots = schema.availableSlots.reduce<Record<string, EditorItem[]>>((acc, slotName) => {
+  const slots = schema.availableSlots.reduce<Record<string, SlotNode[]>>((acc, slotName) => {
     acc[slotName] = [];
     return acc;
   }, {});
@@ -1015,7 +1185,7 @@ function renderCanvasItem(item: EditorItem): HTMLElement {
 
   const previewWrap = document.createElement('div');
   previewWrap.className = 'canvas-item__preview';
-  previewWrap.appendChild(createPreviewElement(item));
+  previewWrap.appendChild(createPreviewElement(item, false));
 
   card.append(meta, previewWrap);
 
@@ -1027,9 +1197,21 @@ function renderCanvasItem(item: EditorItem): HTMLElement {
       const section = document.createElement('section');
       section.className = 'slot-section';
 
+      const header = document.createElement('div');
+      header.className = 'slot-section__header';
+
       const label = document.createElement('p');
       label.className = 'slot-section__title';
       label.textContent = `Slot: ${slotName}`;
+
+      const addTextButton = document.createElement('button');
+      addTextButton.type = 'button';
+      addTextButton.className = 'slot-section__btn';
+      addTextButton.dataset.action = 'add-text';
+      addTextButton.dataset.slotName = slotName;
+      addTextButton.textContent = '+ Texto';
+
+      header.append(label, addTextButton);
 
       const zone = document.createElement('div');
       zone.className = 'slot-dropzone';
@@ -1043,12 +1225,17 @@ function renderCanvasItem(item: EditorItem): HTMLElement {
         empty.textContent = 'Suelta componentes aqui';
         zone.appendChild(empty);
       } else {
-        children.forEach((child) => {
-          zone.appendChild(renderCanvasItem(child));
+        children.forEach((child, index) => {
+          if (child.kind === 'component') {
+            zone.appendChild(renderCanvasItem(child.item));
+            return;
+          }
+
+          zone.appendChild(renderSlotTextNode(item.id, slotName, child, index, children.length));
         });
       }
 
-      section.append(label, zone);
+      section.append(header, zone);
       slotList.appendChild(section);
     });
 
@@ -1058,13 +1245,96 @@ function renderCanvasItem(item: EditorItem): HTMLElement {
   return card;
 }
 
-function createPreviewElement(item: EditorItem): HTMLElement {
+function renderSlotTextNode(
+  parentItemId: string,
+  slotName: string,
+  node: SlotTextNode,
+  index: number,
+  total: number,
+): HTMLElement {
+  const wrap = document.createElement('div');
+  wrap.className = 'slot-text-node';
+
+  const textarea = document.createElement('textarea');
+  textarea.className = 'slot-text-node__input';
+  textarea.value = node.value;
+  textarea.addEventListener('input', () => {
+    updateItemById(parentItemId, (item) => {
+      const slotNodes = item.slots[slotName] || [];
+      item.slots[slotName] = slotNodes.map((slotNode) => {
+        if (slotNode.id !== node.id || slotNode.kind !== 'text') return slotNode;
+        return { ...slotNode, value: textarea.value };
+      });
+    });
+  });
+
+  const actions = document.createElement('div');
+  actions.className = 'slot-text-node__actions';
+
+  const moveUp = document.createElement('button');
+  moveUp.type = 'button';
+  moveUp.textContent = '↑';
+  moveUp.disabled = index === 0;
+  moveUp.addEventListener('click', () => {
+    updateItemById(parentItemId, (item) => {
+      const slotNodes = [...(item.slots[slotName] || [])];
+      if (index === 0) return;
+      [slotNodes[index - 1], slotNodes[index]] = [slotNodes[index], slotNodes[index - 1]];
+      item.slots[slotName] = slotNodes;
+    });
+  });
+
+  const moveDown = document.createElement('button');
+  moveDown.type = 'button';
+  moveDown.textContent = '↓';
+  moveDown.disabled = index === total - 1;
+  moveDown.addEventListener('click', () => {
+    updateItemById(parentItemId, (item) => {
+      const slotNodes = [...(item.slots[slotName] || [])];
+      if (index >= slotNodes.length - 1) return;
+      [slotNodes[index], slotNodes[index + 1]] = [slotNodes[index + 1], slotNodes[index]];
+      item.slots[slotName] = slotNodes;
+    });
+  });
+
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.textContent = 'Eliminar';
+  remove.addEventListener('click', () => {
+    updateItemById(parentItemId, (item) => {
+      item.slots[slotName] = (item.slots[slotName] || []).filter(
+        (slotNode) => slotNode.id !== node.id,
+      );
+    });
+  });
+
+  actions.append(moveUp, moveDown, remove);
+  wrap.append(textarea, actions);
+  return wrap;
+}
+
+function createPreviewElement(item: EditorItem, includeChildren = true): HTMLElement {
   const schema = schemas[item.type];
   const el = schema.createElement(item);
 
+  if (!includeChildren) return el;
+
   schema.availableSlots.forEach((slotName) => {
     (item.slots[slotName] || []).forEach((child) => {
-      const childElement = createPreviewElement(child);
+      if (child.kind === 'text') {
+        if (slotName === ROOT_SLOT) {
+          el.appendChild(document.createTextNode(child.value));
+          return;
+        }
+
+        const wrapper = document.createElement('span');
+        wrapper.setAttribute('slot', slotName);
+        wrapper.textContent = child.value;
+        el.appendChild(wrapper);
+        return;
+      }
+
+      const childElement = createPreviewElement(child.item, true);
       if (slotName !== ROOT_SLOT) {
         childElement.setAttribute('slot', slotName);
       } else {
@@ -1080,9 +1350,15 @@ function createPreviewElement(item: EditorItem): HTMLElement {
 function mapItems(items: EditorItem[], update: (item: EditorItem) => EditorItem): EditorItem[] {
   return items.map((item) => {
     const next = update(item);
-    const nextSlots = Object.entries(next.slots).reduce<Record<string, EditorItem[]>>(
-      (acc, [slotName, slotItems]) => {
-        acc[slotName] = mapItems(slotItems, update);
+    const nextSlots = Object.entries(next.slots).reduce<Record<string, SlotNode[]>>(
+      (acc, [slotName, slotNodes]) => {
+        acc[slotName] = slotNodes.map((slotNode) => {
+          if (slotNode.kind === 'text') return slotNode;
+          return {
+            ...slotNode,
+            item: mapItems([slotNode.item], update)[0],
+          };
+        });
         return acc;
       },
       {},
@@ -1104,11 +1380,31 @@ function removeItemById(
       return;
     }
 
-    const nextSlots: Record<string, EditorItem[]> = {};
-    Object.entries(item.slots).forEach(([slotName, slotItems]) => {
-      const result = removeItemById(slotItems, itemId);
-      if (!removed && result.removed) removed = result.removed;
-      nextSlots[slotName] = result.items;
+    const nextSlots: Record<string, SlotNode[]> = {};
+    Object.entries(item.slots).forEach(([slotName, slotNodes]) => {
+      const rebuilt: SlotNode[] = [];
+      slotNodes.forEach((slotNode) => {
+        if (slotNode.kind === 'text') {
+          rebuilt.push(slotNode);
+          return;
+        }
+
+        if (slotNode.item.id === itemId) {
+          if (!removed) removed = slotNode.item;
+          return;
+        }
+
+        const nested = removeItemById([slotNode.item], itemId);
+        if (!removed && nested.removed) removed = nested.removed;
+        const nextItem = nested.items[0];
+        if (nextItem) {
+          rebuilt.push({
+            ...slotNode,
+            item: nextItem,
+          });
+        }
+      });
+      nextSlots[slotName] = rebuilt;
     });
 
     nextItems.push({ ...item, slots: nextSlots });
@@ -1127,7 +1423,10 @@ function insertItemAtSlot(
 
   return items.map((entry) => {
     if (entry.id === parentId) {
-      const nextSlot = [...(entry.slots[slotName] || []), item];
+      const nextSlot: SlotNode[] = [
+        ...(entry.slots[slotName] || []),
+        { id: generateId(), kind: 'component', item },
+      ];
       return {
         ...entry,
         slots: {
@@ -1137,9 +1436,15 @@ function insertItemAtSlot(
       };
     }
 
-    const nextSlots = Object.entries(entry.slots).reduce<Record<string, EditorItem[]>>(
-      (acc, [name, slotItems]) => {
-        acc[name] = insertItemAtSlot(slotItems, parentId, slotName, item);
+    const nextSlots = Object.entries(entry.slots).reduce<Record<string, SlotNode[]>>(
+      (acc, [name, slotNodes]) => {
+        acc[name] = slotNodes.map((slotNode) => {
+          if (slotNode.kind === 'text') return slotNode;
+          return {
+            ...slotNode,
+            item: insertItemAtSlot([slotNode.item], parentId, slotName, item)[0],
+          };
+        });
         return acc;
       },
       {},
@@ -1155,7 +1460,7 @@ function insertItemAtSlot(
 function isDescendant(items: EditorItem[], ancestorId: string, targetId: string): boolean {
   const ancestor = findItemById(items, ancestorId);
   if (!ancestor) return false;
-  return Boolean(findItemById(Object.values(ancestor.slots).flat(), targetId));
+  return Boolean(findItemById(getComponentChildren(ancestor), targetId));
 }
 
 function moveItemToSlot(
@@ -1175,7 +1480,7 @@ function moveItemToSlot(
 function findItemById(items: EditorItem[], itemId: string): EditorItem | null {
   for (const item of items) {
     if (item.id === itemId) return item;
-    const nested = findItemById(Object.values(item.slots).flat(), itemId);
+    const nested = findItemById(getComponentChildren(item), itemId);
     if (nested) return nested;
   }
   return null;
@@ -1192,8 +1497,13 @@ function findItemLocation(
       return { parentId, slotName };
     }
 
-    for (const [nextSlotName, slotItems] of Object.entries(item.slots)) {
-      const location = findItemLocation(slotItems, itemId, item.id, nextSlotName);
+    for (const [nextSlotName, slotNodes] of Object.entries(item.slots)) {
+      const location = findItemLocation(
+        getComponentChildrenFromNodes(slotNodes),
+        itemId,
+        item.id,
+        nextSlotName,
+      );
       if (location) return location;
     }
   }
@@ -1202,9 +1512,19 @@ function findItemLocation(
 }
 
 function cloneItem(item: EditorItem): EditorItem {
-  const nextSlots = Object.entries(item.slots).reduce<Record<string, EditorItem[]>>(
-    (acc, [slotName, slotItems]) => {
-      acc[slotName] = slotItems.map((slotItem) => cloneItem(slotItem));
+  const nextSlots = Object.entries(item.slots).reduce<Record<string, SlotNode[]>>(
+    (acc, [slotName, slotNodes]) => {
+      acc[slotName] = slotNodes.map((slotNode) => {
+        if (slotNode.kind === 'text') {
+          return { ...slotNode, id: generateId() };
+        }
+
+        return {
+          ...slotNode,
+          id: generateId(),
+          item: cloneItem(slotNode.item),
+        };
+      });
       return acc;
     },
     {},
@@ -1218,6 +1538,20 @@ function cloneItem(item: EditorItem): EditorItem {
     layout: { ...item.layout },
     slots: nextSlots,
   };
+}
+
+function getComponentChildren(item: EditorItem): EditorItem[] {
+  return Object.values(item.slots).flatMap((slotNodes) => getComponentChildrenFromNodes(slotNodes));
+}
+
+function getComponentChildrenFromNodes(slotNodes: SlotNode[]): EditorItem[] {
+  return slotNodes
+    .filter((slotNode): slotNode is SlotComponentNode => slotNode.kind === 'component')
+    .map((slotNode) => slotNode.item);
+}
+
+function hasSlotNodes(item: EditorItem, slotName: string): boolean {
+  return (item.slots[slotName] || []).length > 0;
 }
 
 function applyProps(el: HTMLElement, props: Record<string, PropValue>): void {
@@ -1436,14 +1770,12 @@ function isDsComponent(value: unknown): value is DsComponent {
 
 function normalizeItem(item: Partial<EditorItem> & { type: DsComponent }): EditorItem {
   const schema = schemas[item.type];
-  const slots = schema.availableSlots.reduce<Record<string, EditorItem[]>>((acc, slotName) => {
-    const rawSlot = item.slots?.[slotName] as
-      | Array<Partial<EditorItem> & { type?: unknown }>
-      | undefined;
+  const slots = schema.availableSlots.reduce<Record<string, SlotNode[]>>((acc, slotName) => {
+    const rawSlot = item.slots?.[slotName] as Array<unknown> | undefined;
     acc[slotName] = Array.isArray(rawSlot)
       ? rawSlot
-          .filter((slotItem) => isDsComponent(slotItem.type))
-          .map((slotItem) => normalizeItem(slotItem as Partial<EditorItem> & { type: DsComponent }))
+          .map((slotEntry) => normalizeSlotNode(slotEntry))
+          .filter((slotEntry): slotEntry is SlotNode => Boolean(slotEntry))
       : [];
     return acc;
   }, {});
@@ -1464,6 +1796,39 @@ function normalizeItem(item: Partial<EditorItem> & { type: DsComponent }): Edito
       rowSpan: clamp(Number(item.layout?.rowSpan ?? 1), 1, 4),
     },
     slots,
+  };
+}
+
+function normalizeSlotNode(slotEntry: unknown): SlotNode | null {
+  if (!slotEntry || typeof slotEntry !== 'object') return null;
+
+  const maybeNode = slotEntry as { kind?: unknown; id?: unknown; value?: unknown; item?: unknown };
+  const nodeId = typeof maybeNode.id === 'string' ? maybeNode.id : generateId();
+
+  if (maybeNode.kind === 'text') {
+    return {
+      id: nodeId,
+      kind: 'text',
+      value: typeof maybeNode.value === 'string' ? maybeNode.value : '',
+    };
+  }
+
+  if (maybeNode.kind === 'component' && maybeNode.item && typeof maybeNode.item === 'object') {
+    const nested = maybeNode.item as Partial<EditorItem> & { type?: unknown };
+    if (!isDsComponent(nested.type)) return null;
+    return {
+      id: nodeId,
+      kind: 'component',
+      item: normalizeItem(nested as Partial<EditorItem> & { type: DsComponent }),
+    };
+  }
+
+  const legacyComponent = slotEntry as Partial<EditorItem> & { type?: unknown };
+  if (!isDsComponent(legacyComponent.type)) return null;
+  return {
+    id: nodeId,
+    kind: 'component',
+    item: normalizeItem(legacyComponent as Partial<EditorItem> & { type: DsComponent }),
   };
 }
 
