@@ -14,12 +14,13 @@
 - Hacer cambios pequenos y enfocados.
 - No introducir refactors ajenos a la tarea.
 - Si cambia API/UI, actualizar tests + stories + docs en el mismo cambio.
+- Si se agrega un componente nuevo, incluir siempre demo en Storybook y demo en `apps/stencil-playground/index.html` en el mismo PR.
 - No commitear artefactos generados (`packages/*/.stencil`, `packages/*/www`, `storybook-static`).
 
 ## Flujo recomendado
 
 1. Implementar cambio en componente/documentacion.
-2. Actualizar tests y stories.
+2. Actualizar tests, stories y demo del playground (`apps/stencil-playground/index.html`).
 3. Validar localmente:
    - `pnpm lint`
    - `pnpm test`

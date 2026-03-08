@@ -12,7 +12,7 @@ export class InclusivCheckbox {
   @Prop() disabled = false;
   @Prop() label = '';
 
-  @Event() checkedChange: EventEmitter<boolean>;
+  @Event() checkedChange!: EventEmitter<boolean>;
 
   private handleChange = (ev: Event) => {
     const target = ev.target as HTMLInputElement;

@@ -11,7 +11,7 @@ export class InclusivToggle {
   @Prop() disabled = false;
   @Prop() label = '';
 
-  @Event() toggleChange: EventEmitter<boolean>;
+  @Event() toggleChange!: EventEmitter<boolean>;
 
   private handleChange = (ev: Event) => {
     const target = ev.target as HTMLInputElement;

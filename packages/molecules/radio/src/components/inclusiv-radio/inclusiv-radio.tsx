@@ -13,7 +13,7 @@ export class InclusivRadio {
   @Prop() value = '';
   @Prop() label = '';
 
-  @Event() radioChange: EventEmitter<string>;
+  @Event() radioChange!: EventEmitter<string>;
 
   private handleChange = (ev: Event) => {
     const target = ev.target as HTMLInputElement;

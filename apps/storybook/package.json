@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "storybook": "pnpm --filter @inclusiv-ds/button build && pnpm --filter @inclusiv-ds/input build && storybook dev -p 6006 --no-open",
-    "build:storybook": "pnpm --filter @inclusiv-ds/button build && pnpm --filter @inclusiv-ds/input build && storybook build"
+    "storybook": "pnpm --filter @inclusiv-ds/button build && pnpm --filter @inclusiv-ds/input build && pnpm --filter @inclusiv-ds/badge build && pnpm --filter @inclusiv-ds/spinner build && pnpm --filter @inclusiv-ds/typography build && pnpm --filter @inclusiv-ds/checkbox build && pnpm --filter @inclusiv-ds/radio build && pnpm --filter @inclusiv-ds/toggle build && pnpm --filter @inclusiv-ds/form-field build && storybook dev -p 6006 --no-open",
+    "build:storybook": "pnpm --filter @inclusiv-ds/button build && pnpm --filter @inclusiv-ds/input build && pnpm --filter @inclusiv-ds/badge build && pnpm --filter @inclusiv-ds/spinner build && pnpm --filter @inclusiv-ds/typography build && pnpm --filter @inclusiv-ds/checkbox build && pnpm --filter @inclusiv-ds/radio build && pnpm --filter @inclusiv-ds/toggle build && pnpm --filter @inclusiv-ds/form-field build && storybook build"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.18",
@@ -14,8 +14,15 @@
     "vite": "^6.4.1"
   },
   "dependencies": {
+    "@inclusiv-ds/badge": "workspace:*",
     "@inclusiv-ds/button": "workspace:*",
+    "@inclusiv-ds/checkbox": "workspace:*",
+    "@inclusiv-ds/form-field": "workspace:*",
     "@inclusiv-ds/input": "workspace:*",
-    "@inclusiv-ds/tokens": "workspace:*"
+    "@inclusiv-ds/radio": "workspace:*",
+    "@inclusiv-ds/spinner": "workspace:*",
+    "@inclusiv-ds/toggle": "workspace:*",
+    "@inclusiv-ds/tokens": "workspace:*",
+    "@inclusiv-ds/typography": "workspace:*"
   }
 }

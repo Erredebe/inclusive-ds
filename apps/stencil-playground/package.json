@@ -7,9 +7,16 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@inclusiv-ds/badge": "workspace:*",
     "@inclusiv-ds/button": "workspace:*",
+    "@inclusiv-ds/checkbox": "workspace:*",
+    "@inclusiv-ds/form-field": "workspace:*",
     "@inclusiv-ds/input": "workspace:*",
-    "@inclusiv-ds/tokens": "workspace:*"
+    "@inclusiv-ds/radio": "workspace:*",
+    "@inclusiv-ds/spinner": "workspace:*",
+    "@inclusiv-ds/toggle": "workspace:*",
+    "@inclusiv-ds/tokens": "workspace:*",
+    "@inclusiv-ds/typography": "workspace:*"
   },
   "devDependencies": {
     "vite": "^6.4.1"

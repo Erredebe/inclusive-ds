@@ -8,9 +8,11 @@
   <body>
     <main class="layout">
       <h1>Stencil Playground</h1>
-      <p style="margin: 0; display: flex; gap: 12px; flex-wrap: wrap;">
+      <p style="margin: 0; display: flex; gap: 12px; flex-wrap: wrap">
         <a href="/storybook">Ver Storybook</a>
-        <a href="https://github.com/Erredebe/inclusive-ds" target="_blank" rel="noreferrer">Ver repositorio</a>
+        <a href="https://github.com/Erredebe/inclusive-ds" target="_blank" rel="noreferrer"
+          >Ver repositorio</a
+        >
       </p>
 
       <section class="card">
@@ -40,6 +42,57 @@
             placeholder="tu@email.com"
             helper-text="Formato invalido"
           ></iv-input>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>iv-badge + iv-spinner</h2>
+        <div class="row">
+          <iv-badge>Default</iv-badge>
+          <iv-badge variant="success">Success</iv-badge>
+          <iv-badge variant="warning">Warning</iv-badge>
+          <iv-badge variant="error">Error</iv-badge>
+          <iv-badge variant="info">Info</iv-badge>
+        </div>
+        <div class="row" style="margin-top: 12px">
+          <iv-spinner size="sm"></iv-spinner>
+          <iv-spinner size="md"></iv-spinner>
+          <iv-spinner size="lg"></iv-spinner>
+          <iv-spinner version="v2" label="Cargando"></iv-spinner>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>iv-typography</h2>
+        <div class="col">
+          <iv-heading level="h3">Titulo de seccion</iv-heading>
+          <iv-text variant="body">Texto de cuerpo para contenido principal.</iv-text>
+          <iv-text variant="caption" color="muted">Texto auxiliar en formato caption.</iv-text>
+          <iv-text variant="overline" color="primary">Categoria</iv-text>
+          <iv-label required>Correo electronico</iv-label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>iv-checkbox + iv-radio + iv-toggle + iv-form-field</h2>
+        <div class="col">
+          <iv-checkbox label="Acepto terminos"></iv-checkbox>
+
+          <iv-radio-group label="Tamano">
+            <iv-radio name="size" value="s" label="Small"></iv-radio>
+            <iv-radio name="size" value="m" label="Medium"></iv-radio>
+            <iv-radio name="size" value="l" label="Large"></iv-radio>
+          </iv-radio-group>
+
+          <iv-toggle label="Recibir notificaciones"></iv-toggle>
+
+          <iv-form-field
+            label="Correo"
+            helper-text="Usaremos este correo para contactarte"
+            required
+          >
+            <iv-input version="v2" placeholder="tu@email.com"></iv-input>
+          </iv-form-field>
         </div>
       </section>
     </main>

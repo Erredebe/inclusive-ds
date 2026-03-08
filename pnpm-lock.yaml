@@ -47,15 +47,36 @@ importers:
 
   apps/stencil-playground:
     dependencies:
+      '@inclusiv-ds/badge':
+        specifier: workspace:*
+        version: link:../../packages/atoms/badge
       '@inclusiv-ds/button':
         specifier: workspace:*
         version: link:../../packages/atoms/button
+      '@inclusiv-ds/checkbox':
+        specifier: workspace:*
+        version: link:../../packages/molecules/checkbox
+      '@inclusiv-ds/form-field':
+        specifier: workspace:*
+        version: link:../../packages/molecules/form-field
       '@inclusiv-ds/input':
         specifier: workspace:*
         version: link:../../packages/atoms/input
+      '@inclusiv-ds/radio':
+        specifier: workspace:*
+        version: link:../../packages/molecules/radio
+      '@inclusiv-ds/spinner':
+        specifier: workspace:*
+        version: link:../../packages/atoms/spinner
+      '@inclusiv-ds/toggle':
+        specifier: workspace:*
+        version: link:../../packages/molecules/toggle
       '@inclusiv-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      '@inclusiv-ds/typography':
+        specifier: workspace:*
+        version: link:../../packages/atoms/typography
     devDependencies:
       vite:
         specifier: ^6.4.1
@@ -63,15 +84,36 @@ importers:
 
   apps/storybook:
     dependencies:
+      '@inclusiv-ds/badge':
+        specifier: workspace:*
+        version: link:../../packages/atoms/badge
       '@inclusiv-ds/button':
         specifier: workspace:*
         version: link:../../packages/atoms/button
+      '@inclusiv-ds/checkbox':
+        specifier: workspace:*
+        version: link:../../packages/molecules/checkbox
+      '@inclusiv-ds/form-field':
+        specifier: workspace:*
+        version: link:../../packages/molecules/form-field
       '@inclusiv-ds/input':
         specifier: workspace:*
         version: link:../../packages/atoms/input
+      '@inclusiv-ds/radio':
+        specifier: workspace:*
+        version: link:../../packages/molecules/radio
+      '@inclusiv-ds/spinner':
+        specifier: workspace:*
+        version: link:../../packages/atoms/spinner
+      '@inclusiv-ds/toggle':
+        specifier: workspace:*
+        version: link:../../packages/molecules/toggle
       '@inclusiv-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      '@inclusiv-ds/typography':
+        specifier: workspace:*
+        version: link:../../packages/atoms/typography
     devDependencies:
       '@storybook/addon-essentials':
         specifier: ^8.6.18
